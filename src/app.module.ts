@@ -1,13 +1,14 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
-import { ConfigModule, ConfigService } from '@nestjs/config';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { typeOrmConfig } from './ormConfig';
-import { UsersModule } from './users/users.module';
-import { JwtAuthService } from './jwt/jwt.service';
 import { JwtService } from '@nestjs/jwt';
-import { HashPasswordService } from './hash-password/hash-password.service';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+
+import { AppService } from './app.service';
+import { typeOrmConfig } from './ormConfig';
+import { AppController } from './app.controller';
+import { UsersModule } from './users/users.module';
+import { JwtAuthService } from './services/jwt/jwt.service';
+import { HashPasswordService } from './services/hash-password/hash-password.service';
 
 const modules = [
   ConfigModule.forRoot({

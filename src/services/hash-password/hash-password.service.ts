@@ -8,7 +8,7 @@ export class HashPasswordService {
   constructor(private readonly configService: ConfigService) {}
 
   async hashPassword(password: string): Promise<string> {
-    const saltRounds = this.configService.get<string>('JWT_SECRET');
+    const saltRounds = 10;
     const hashedPassword = await bcrypt.hash(password, saltRounds);
     return hashedPassword;
   }
