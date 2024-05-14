@@ -10,3 +10,7 @@ export interface loginResponse {
   token: string;
   id: string;
 }
+
+export interface forgetResponse {
+  message:string
+}

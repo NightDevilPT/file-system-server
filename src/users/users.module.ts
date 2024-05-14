@@ -14,11 +14,15 @@ import { MailService } from 'src/services/mail/mail.service';
 import { JwtAuthService } from 'src/services/jwt/jwt.service';
 import { LoginUserHandler } from './command/handler/login-user.command';
 import { HashPasswordService } from 'src/services/hash-password/hash-password.service';
+import { ForgetPasswordHandler } from './command/handler/forget-user.command';
+import { UpdatePasswordHandler } from './command/handler/update-user-password-command';
 
 const commandHandlers = [
   CreateUserHandler,
   VerifyUserHandler,
   LoginUserHandler,
+  ForgetPasswordHandler,
+  UpdatePasswordHandler
 ];
 
 @Module({
