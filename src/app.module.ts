@@ -6,7 +6,10 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AppService } from './app.service';
 import { typeOrmConfig } from './ormConfig';
 import { AppController } from './app.controller';
+
 import { UsersModule } from './users/users.module';
+import { ProfileModule } from './profile/profile.module';
+
 import { JwtAuthService } from './services/jwt/jwt.service';
 import { HashPasswordService } from './services/hash-password/hash-password.service';
 
@@ -21,7 +24,8 @@ const modules = [
       typeOrmConfig(configService),
     inject: [ConfigService],
   }),
-  UsersModule
+  UsersModule,
+  ProfileModule
 ];
 
 @Module({
