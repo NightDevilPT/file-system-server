@@ -35,11 +35,16 @@ export class UsersService {
     return this.commandBus.execute(new LoginUserCommand(loginUserDto));
   }
 
-  forgetUser(forgetUserDto:ForgetUserDto):Promise<forgetResponse>{
-    return this.commandBus.execute(new ForgetPasswordCommand(forgetUserDto))
+  forgetUser(forgetUserDto: ForgetUserDto): Promise<forgetResponse> {
+    return this.commandBus.execute(new ForgetPasswordCommand(forgetUserDto));
   }
 
-  updateUserPassword(updatePasswordUserDto:UpdatePasswordUserDto,token:string):Promise<forgetResponse>{
-    return this.commandBus.execute(new UpdatePasswordCommand(updatePasswordUserDto.password,token))
+  updateUserPassword(
+    updatePasswordUserDto: UpdatePasswordUserDto,
+    token: string,
+  ): Promise<forgetResponse> {
+    return this.commandBus.execute(
+      new UpdatePasswordCommand(updatePasswordUserDto.password, token),
+    );
   }
 }

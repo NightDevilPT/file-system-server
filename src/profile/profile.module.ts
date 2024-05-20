@@ -12,11 +12,12 @@ import { User } from 'src/users/entities/user.entity';
 
 import { CreateProfileHandler } from './command/create-profile.command';
 import { UpdateProfileHandler } from './command/update-profile.command';
+import { Folder } from 'src/folder/entities/folder.entity';
 
 const allCommands = [CreateProfileHandler, UpdateProfileHandler];
 
 @Module({
-  imports: [CqrsModule, TypeOrmModule.forFeature([User, Profile])],
+  imports: [CqrsModule, TypeOrmModule.forFeature([User, Profile, Folder])],
   controllers: [ProfileController],
   providers: [ProfileService, JwtService, JwtAuthService, ...allCommands],
 })

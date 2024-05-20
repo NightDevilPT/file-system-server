@@ -33,7 +33,9 @@ export class MailService {
       return true; // Mail sent successfully
     } catch (error) {
       console.error('Error sending email:', error);
-      this.logger.error(`Error sending email to ${to}: ${error} at ${new Date().toLocaleString()}`);
+      this.logger.error(
+        `Error sending email to ${to}: ${error} at ${new Date().toLocaleString()}`,
+      );
       return false; // Failed to send email
     }
   }

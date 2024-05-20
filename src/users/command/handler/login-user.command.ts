@@ -18,11 +18,13 @@ export class LoginUserHandler implements ICommandHandler<LoginUserCommand> {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
-	private readonly jwtService:JwtAuthService,
-	private readonly hashService:HashPasswordService
+    private readonly jwtService: JwtAuthService,
+    private readonly hashService: HashPasswordService,
   ) {}
 
-  async execute({ payload }: LoginUserCommand): Promise<{ token: string; id: string }> {
+  async execute({
+    payload,
+  }: LoginUserCommand): Promise<{ token: string; id: string }> {
     const { email, password } = payload;
 
     // Find user by email
@@ -33,7 +35,10 @@ export class LoginUserHandler implements ICommandHandler<LoginUserCommand> {
     }
 
     // Check if password matches
-    const passwordMatches = await this.hashService.verifyPassword(password, user.password);
+    const passwordMatches = await this.hashService.verifyPassword(
+      password,
+      user.password,
+    );
     if (!passwordMatches) {
       throw new GoneException('Invalid credentials');
     }

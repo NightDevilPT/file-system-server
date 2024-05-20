@@ -53,7 +53,10 @@ describe('JwtAuthService', () => {
       const generatedToken = service.generateToken(payload);
 
       expect(generatedToken).toBe(token);
-      expect(jwtService.sign).toHaveBeenCalledWith(payload, { secret: 'secretKey', expiresIn: '1d' });
+      expect(jwtService.sign).toHaveBeenCalledWith(payload, {
+        secret: 'secretKey',
+        expiresIn: '1d',
+      });
     });
   });
 
@@ -66,7 +69,9 @@ describe('JwtAuthService', () => {
       const verifiedToken = service.verifyToken(token);
 
       expect(verifiedToken).toEqual(decodedToken);
-      expect(jwtService.verify).toHaveBeenCalledWith(token, { secret: 'secretKey' });
+      expect(jwtService.verify).toHaveBeenCalledWith(token, {
+        secret: 'secretKey',
+      });
     });
   });
 });

@@ -6,7 +6,6 @@ import { NotFoundException } from '@nestjs/common';
 import { Profile } from '../entities/profile.entity';
 import { UpdateProfileDto } from '../dto/update-profile.dto';
 
-
 export class UpdateProfileCommand implements ICommand {
   constructor(
     public readonly payload: UpdateProfileDto,

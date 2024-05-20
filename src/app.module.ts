@@ -12,6 +12,7 @@ import { ProfileModule } from './profile/profile.module';
 
 import { JwtAuthService } from './services/jwt/jwt.service';
 import { HashPasswordService } from './services/hash-password/hash-password.service';
+import { FolderModule } from './folder/folder.module';
 
 const modules = [
   ConfigModule.forRoot({
@@ -25,12 +26,13 @@ const modules = [
     inject: [ConfigService],
   }),
   UsersModule,
-  ProfileModule
+  ProfileModule,
+  FolderModule,
 ];
 
 @Module({
   imports: modules,
   controllers: [AppController],
-  providers: [AppService, JwtAuthService,JwtService, HashPasswordService],
+  providers: [AppService, JwtAuthService, JwtService, HashPasswordService],
 })
 export class AppModule {}

@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Put, Query } from '@nestjs/common';
+import { Controller, Post, Body, Put, Query } from '@nestjs/common';
 
 import { User } from './entities/user.entity';
 import { UsersService } from './users.service';
@@ -16,7 +16,6 @@ import {
   ApiTags,
   ApiResponse,
   ApiCreatedResponse,
-  ApiParam,
   ApiNotFoundResponse,
   ApiQuery,
   ApiOperation,
@@ -78,6 +77,6 @@ export class UsersController {
     @Body() updatePasswordDto: UpdatePasswordUserDto,
     @Query('token') token: string,
   ): Promise<forgetResponse> {
-    return this.usersService.updateUserPassword(updatePasswordDto,token);
+    return this.usersService.updateUserPassword(updatePasswordDto, token);
   }
 }

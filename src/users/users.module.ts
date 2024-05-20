@@ -22,7 +22,7 @@ const commandHandlers = [
   VerifyUserHandler,
   LoginUserHandler,
   ForgetPasswordHandler,
-  UpdatePasswordHandler
+  UpdatePasswordHandler,
 ];
 
 @Module({

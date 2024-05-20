@@ -12,5 +12,5 @@ export interface loginResponse {
 }
 
 export interface forgetResponse {
-  message:string
+  message: string;
 }

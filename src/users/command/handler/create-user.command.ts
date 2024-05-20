@@ -46,7 +46,7 @@ export class CreateUserHandler implements ICommandHandler<CreateUserCommand> {
       newUser.token = token;
       newUser.provider = payload.provider || Provider.Local;
 
-      const userSaved = await this.userRepository.save(newUser);
+      await this.userRepository.save(newUser);
       const isMailSent = await this.mailService.sendMail(
         newUser.email,
         'Email-ID Verification',

@@ -9,12 +9,16 @@ import { ICommand } from '@nestjs/cqrs';
 import { forgetResponse } from 'src/users/user.interface';
 
 export class UpdatePasswordCommand implements ICommand {
-  constructor(public readonly password: string, public readonly token: string) {}
+  constructor(
+    public readonly password: string,
+    public readonly token: string,
+  ) {}
 }
 
-
 @CommandHandler(UpdatePasswordCommand)
-export class UpdatePasswordHandler implements ICommandHandler<UpdatePasswordCommand> {
+export class UpdatePasswordHandler
+  implements ICommandHandler<UpdatePasswordCommand>
+{
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
@@ -35,8 +39,8 @@ export class UpdatePasswordHandler implements ICommandHandler<UpdatePasswordComm
     user.password = hashedPassword;
     user.token = null; // Clear the token after password update
     await this.userRepository.save(user);
-	return {
-		message:`password successfully updated.`
-	}
+    return {
+      message: `password successfully updated.`,
+    };
   }
 }

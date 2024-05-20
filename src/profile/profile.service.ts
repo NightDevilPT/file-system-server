@@ -11,14 +11,17 @@ import { UpdateProfileCommand } from './command/update-profile.command';
 @Injectable()
 export class ProfileService {
   constructor(private commandBus: CommandBus) {}
-  
+
   createProfile(createProfileDto: CreateProfileDto, userId: string) {
     return this.commandBus.execute(
       new CreateProfileCommand(createProfileDto, userId),
     );
   }
 
-  updateProfile(updateProfileDto: UpdateProfileDto, userId: string):Promise<Profile> {
+  updateProfile(
+    updateProfileDto: UpdateProfileDto,
+    userId: string,
+  ): Promise<Profile> {
     return this.commandBus.execute(
       new UpdateProfileCommand(updateProfileDto, userId),
     );

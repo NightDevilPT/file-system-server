@@ -43,7 +43,10 @@ describe('HashPasswordService', () => {
 
     it('should return false for incorrect password', async () => {
       const hashedPassword = await service.hashPassword('password');
-      const result = await service.verifyPassword('wrongpassword', hashedPassword);
+      const result = await service.verifyPassword(
+        'wrongpassword',
+        hashedPassword,
+      );
       expect(result).toBeFalsy();
     });
   });

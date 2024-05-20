@@ -2,7 +2,9 @@ import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { ConfigService } from '@nestjs/config';
 import { Connection } from 'typeorm';
 
-export const typeOrmConfig = async (configService: ConfigService): Promise<TypeOrmModuleOptions> => ({
+export const typeOrmConfig = async (
+  configService: ConfigService,
+): Promise<TypeOrmModuleOptions> => ({
   type: 'postgres',
   host: configService.get<string>('DB_HOST'),
   port: parseInt(configService.get<string>('DB_PORT')),
@@ -18,7 +20,10 @@ export const typeOrmConfig = async (configService: ConfigService): Promise<TypeO
 });
 
 // Establish the database connection and log the connection status
-export const createConnection = async (configService: ConfigService, connection: Connection) => {
+export const createConnection = async (
+  configService: ConfigService,
+  connection: Connection,
+) => {
   if (!connection.isConnected) {
     await connection.connect();
     console.log('Connected to the database');

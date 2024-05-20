@@ -5,7 +5,7 @@ import { response } from './app.interface';
 export class AppService {
   getHello(): response {
     return {
-      message:'Welcome to File Management System'
+      message: 'Welcome to File Management System',
     };
   }
 }
