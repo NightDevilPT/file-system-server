@@ -5,6 +5,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AppService } from './app.service';
 import { AppController } from './app.controller';
 import { typeOrmConfig } from './ormConfig';
+import { AllModules } from './modules';
 
 
 const modules = [
@@ -17,7 +18,8 @@ const modules = [
     useFactory: async (configService: ConfigService) =>
       typeOrmConfig(configService),
     inject: [ConfigService],
-  })
+  }),
+  ...AllModules
 ];
 
 @Module({
