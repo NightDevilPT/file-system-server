@@ -1,26 +1,41 @@
 import { Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { CommandBus } from '@nestjs/cqrs';
+import { User } from './entities/user.entity';
+import { loginUserResponse, userResponseInterface } from './interfaces/user.interface';
+import { CreateUserCommand } from './commands/impl/create-user.command';
+import { VerifyUserCommand } from './commands/impl/verify-user.command';
+import { LoginUserDto } from './dto/login-user.dto';
+import { LoginUserCommand } from './commands/impl/login-user.command';
+import { ForgetPasswordUserDto } from './dto/forget-password-user.dto';
+import { ForgetPasswordCommand } from './commands/impl/forget-password-user.command';
+import { UpdatePasswordUserDto } from './dto/update-password-user.dto';
+import { UpdatePasswordCommand } from './commands/impl/update-password-user.command';
 
 @Injectable()
 export class UsersService {
-  create(createUserDto: CreateUserDto) {
-    return 'This action adds a new user';
+  constructor(private readonly commandBus: CommandBus) {}
+
+  public createUser(
+    createUserDto: CreateUserDto,
+  ): Promise<userResponseInterface> {
+    return this.commandBus.execute(new CreateUserCommand(createUserDto));
   }
 
-  findAll() {
-    return `This action returns all users`;
+  public verifyUser(token: string): Promise<userResponseInterface> {
+    return this.commandBus.execute(new VerifyUserCommand(token));
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
+  public loginUser(loginUserDto:LoginUserDto):Promise<loginUserResponse>{
+    return this.commandBus.execute(new LoginUserCommand(loginUserDto))
   }
 
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
+  public forgetPassword(forgetPasswordDto:ForgetPasswordUserDto):Promise<userResponseInterface>{
+    return this.commandBus.execute(new ForgetPasswordCommand(forgetPasswordDto))
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} user`;
+  public updatePassword(upduatePasswordDto:UpdatePasswordUserDto,token:string):Promise<userResponseInterface>{
+    return this.commandBus.execute(new UpdatePasswordCommand(upduatePasswordDto,token))
   }
 }

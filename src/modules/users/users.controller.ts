@@ -1,34 +1,65 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
-import { UsersService } from './users.service';
+import { Controller, Post, Body, Put, Query } from '@nestjs/common';
+import { ApiConsumes, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
+import { UsersService } from './users.service';  // Ensure you have a service to handle user operations
+import { loginUserResponse, userResponseInterface } from './interfaces/user.interface';
+import { LoginUserDto } from './dto/login-user.dto';
+import { ForgetPasswordUserDto } from './dto/forget-password-user.dto';
+import { UpdatePasswordUserDto } from './dto/update-password-user.dto';
 
+@ApiTags('User Controller')
 @Controller('users')
-export class UsersController {
-  constructor(private readonly usersService: UsersService) {}
+export class UserController {
+  constructor(
+    private readonly usersService: UsersService,
+  ) {}
 
   @Post()
-  create(@Body() createUserDto: CreateUserDto) {
-    return this.usersService.create(createUserDto);
+  @ApiConsumes('application/x-www-form-urlencoded')
+  @ApiOperation({ summary: 'Create a new user' })
+  @ApiResponse({ status: 201, description: 'The user has been successfully created.' })
+  @ApiResponse({ status: 400, description: 'Bad Request.' })
+  async createUser(@Body() createUserDto: CreateUserDto):Promise<userResponseInterface> {
+    return this.usersService.createUser(createUserDto);
   }
 
-  @Get()
-  findAll() {
-    return this.usersService.findAll();
+  @Post('login')
+  @ApiConsumes('application/x-www-form-urlencoded')
+  @ApiOperation({ summary: 'Login a user' })
+  @ApiResponse({ status: 201, description: 'The user has been successfully logged in.' })
+  @ApiResponse({ status: 400, description: 'Bad Request.' })
+  async loginUser(@Body() loginDto: LoginUserDto): Promise<loginUserResponse> {
+    return this.usersService.loginUser(loginDto)
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.usersService.findOne(+id);
+  @Put('forget-password')
+  @ApiConsumes('application/x-www-form-urlencoded')
+  @ApiOperation({ summary: 'Login a user' })
+  @ApiResponse({ status: 201, description: 'The user has been successfully logged in.' })
+  @ApiResponse({ status: 400, description: 'Bad Request.' })
+  async forgetPassword(@Body() forgetPasswordDto: ForgetPasswordUserDto): Promise<userResponseInterface> {
+    return this.usersService.forgetPassword(forgetPasswordDto)
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.usersService.update(+id, updateUserDto);
+  @Put('update-password')
+  @ApiConsumes('application/x-www-form-urlencoded')
+  @ApiOperation({ summary: 'Update user password' })
+  @ApiResponse({ status: 201, description: 'The user password has been successfully updated.' })
+  @ApiResponse({ status: 400, description: 'Bad Request.' })
+  async updatePassword(
+    @Body() forgetPasswordDto: UpdatePasswordUserDto,
+    @Query('token') token: string,
+  ): Promise<userResponseInterface> {
+    return this.usersService.updatePassword(forgetPasswordDto, token);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.usersService.remove(+id);
+  @Put('/verify')
+  @ApiOperation({ summary: 'Update a user by ID' })
+  @ApiResponse({ status: 200, description: 'The user has been successfully updated.' })
+  @ApiResponse({ status: 400, description: 'Bad Request.' })
+  async verifyUser(
+    @Query('token') token: string
+  ): Promise<userResponseInterface> {
+    return this.usersService.verifyUser(token);
   }
 }

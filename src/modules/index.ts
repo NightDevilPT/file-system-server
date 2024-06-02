@@ -1,5 +1,5 @@
-// import { UsersModule } from "./users/users.module";
+import { UsersModule } from "./users/users.module";
 
 export const AllModules = [
-	// UsersModule
+	UsersModule
 ]
