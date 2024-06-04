@@ -1,7 +1,15 @@
 import { File } from 'src/modules/files/entities/file.entity';
 import { User } from 'src/modules/users/entities/user.entity';
 import { Folder } from 'src/modules/folders/entities/folder.entity';
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany, JoinColumn, OneToOne } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  OneToMany,
+  JoinColumn,
+  OneToOne,
+} from 'typeorm';
+import { GenderEnum, StorageType } from '../interfaces/profile.interfaces';
 
 @Entity('profiles')
 export class Profile {
@@ -14,11 +22,14 @@ export class Profile {
   @Column({ nullable: false })
   lastName: string;
 
-  @Column({ nullable: false, enum: ['MALE', 'FEMALE', 'OTHER'] })
+  @Column({ nullable: false, enum: GenderEnum })
   gender: string;
 
-  @Column({ nullable: true })
+  @Column({ nullable: false })
   storageSize: number | null;
+
+  @Column({ nullable: false, enum: StorageType })
+  upgraded: string;
 
   @Column({ default: () => 'CURRENT_TIMESTAMP' })
   createdAt: Date;
@@ -26,13 +37,16 @@ export class Profile {
   @Column({ default: () => 'CURRENT_TIMESTAMP' })
   updatedAt: Date;
 
-  @OneToMany(() => Folder, folder => folder.profile, { cascade: true })
+  @OneToMany(() => Folder, (folder) => folder.profile, { cascade: true })
   folders: Folder[];
 
-  @OneToMany(() => File, file => file.profile, { cascade: true })
+  @OneToMany(() => File, (file) => file.profile, { cascade: true })
   files: File[];
 
-  @OneToOne(() => User)
+  @OneToOne(() => User, (user) => user.profile, {
+    cascade: ['insert', 'update'],
+    eager: true,
+  })
   @JoinColumn()
   user: User;
 }

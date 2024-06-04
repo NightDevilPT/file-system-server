@@ -1,5 +1,11 @@
+import { Exclude } from 'class-transformer';
 import { Profile } from 'src/modules/profiles/entities/profile.entity';
-import { Entity, PrimaryGeneratedColumn, Column, OneToOne, JoinColumn } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  OneToOne,
+} from 'typeorm';
 
 @Entity('users')
 export class User {
@@ -12,13 +18,13 @@ export class User {
   @Column({ nullable: false, unique: true })
   email: string;
 
-  @Column({ nullable: false })
+  @Column({ nullable: false, select:false })
   password: string;
 
-  @Column({ nullable: true })
+  @Column({ nullable: true, select:false })
   token: string | null;
 
-  @Column({ default: false })
+  @Column({ default: false, select:false })
   isVerified: boolean;
 
   @Column({ default: () => 'CURRENT_TIMESTAMP' })
@@ -27,7 +33,6 @@ export class User {
   @Column({ default: () => 'CURRENT_TIMESTAMP' })
   updatedAt: Date;
 
-  @OneToOne(() => Profile, { cascade: true })
-  @JoinColumn()
+  @OneToOne(() => Profile, (profile) => profile.user)
   profile: Profile;
 }

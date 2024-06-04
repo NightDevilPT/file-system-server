@@ -1,26 +1,35 @@
 import { Injectable } from '@nestjs/common';
 import { CreateProfileDto } from './dto/create-profile.dto';
 import { UpdateProfileDto } from './dto/update-profile.dto';
+import { Profile } from './entities/profile.entity';
+import { CommandBus, QueryBus } from '@nestjs/cqrs';
+import { CreateProfileCommand } from './commands/impl/create-profile.command';
+import { UpdateProfileCommand } from './commands/impl/update-profile.command';
+import { GetProfileByUserIdQuery } from './queries/impl/get-profile-by-user-id.query';
+import { ProfileResponse } from './interfaces/profile.interfaces';
 
 @Injectable()
 export class ProfilesService {
-  create(createProfileDto: CreateProfileDto) {
-    return 'This action adds a new profile';
+  constructor(
+    private readonly commandBus: CommandBus,
+    private readonly queryBus: QueryBus,
+  ) {}
+  create(createProfileDto: CreateProfileDto, userId: string): Promise<Profile> {
+    return this.commandBus.execute(
+      new CreateProfileCommand(userId, createProfileDto),
+    );
   }
 
-  findAll() {
-    return `This action returns all profiles`;
+  findOne(userId: string):Promise<ProfileResponse> {
+    return this.queryBus.execute(new GetProfileByUserIdQuery(userId));
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} profile`;
-  }
-
-  update(id: number, updateProfileDto: UpdateProfileDto) {
-    return `This action updates a #${id} profile`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} profile`;
+  async updateProfile(
+    profileId: string,
+    payload: UpdateProfileDto,
+  ): Promise<Profile> {
+    return this.commandBus.execute(
+      new UpdateProfileCommand(profileId, payload),
+    );
   }
 }
