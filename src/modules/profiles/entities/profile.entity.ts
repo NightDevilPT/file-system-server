@@ -37,7 +37,7 @@ export class Profile {
   @Column({ default: () => 'CURRENT_TIMESTAMP' })
   updatedAt: Date;
 
-  @OneToMany(() => Folder, (folder) => folder.profile, { cascade: true })
+  @OneToMany(() => Folder, (folder) => folder.parentProfile, { cascade: true })
   folders: Folder[];
 
   @OneToMany(() => File, (file) => file.profile, { cascade: true })

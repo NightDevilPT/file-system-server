@@ -1,7 +1,25 @@
 import { File } from 'src/modules/files/entities/file.entity';
 import { Profile } from 'src/modules/profiles/entities/profile.entity';
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany, JoinColumn } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  ManyToOne,
+  OneToMany,
+  JoinColumn,
+  BeforeUpdate,
+} from 'typeorm';
 
+export enum FolderEnum {
+  FOLDER = 'FOLDER',
+  FILE = 'FILE',
+}
+
+export enum PrivateEnum {
+  PUBLIC = 'PUBLIC',
+  PRIVATE = 'PRIVATE',
+  ONLY = 'ONLY',
+}
 
 @Entity('folders')
 export class Folder {
@@ -11,11 +29,14 @@ export class Folder {
   @Column({ nullable: false })
   name: string;
 
-  @Column({ default: 'FOLDER' })
-  type: string;
+  @Column({ default: FolderEnum.FOLDER, enum: FolderEnum })
+  type: FolderEnum;
 
-  @Column({ default: 'PUBLIC' })
-  isPrivate: string;
+  @Column({ default: PrivateEnum.PUBLIC, enum: PrivateEnum })
+  isPrivate: PrivateEnum;
+
+  @Column({ type: 'uuid', array: true, nullable: true })
+  userIds: string[];
 
   @Column({ default: () => 'CURRENT_TIMESTAMP' })
   createdAt: Date;
@@ -23,16 +44,23 @@ export class Folder {
   @Column({ default: () => 'CURRENT_TIMESTAMP' })
   updatedAt: Date;
 
-  @ManyToOne(() => Profile, profile => profile.folders)
+  @ManyToOne(() => Profile, (profile) => profile.folders)
   @JoinColumn()
-  profile: Profile;
+  parentProfile: Profile;
 
-  @ManyToOne(() => Folder, folder => folder.folders, { onDelete: 'CASCADE' })
+  @ManyToOne(() => Folder, (folder) => folder.childFolders, { onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'parentFolderId' })
   parentFolder: Folder;
 
-  @OneToMany(() => Folder, folder => folder.parentFolder, { cascade: true })
-  folders: Folder[];
+  @OneToMany(() => Folder, (folder) => folder.parentFolder)
+  childFolders: Folder[];
 
-  @OneToMany(() => File, file => file.folder, { cascade: true })
+  @OneToMany(() => File, (file) => file.folder, { cascade: true })
   files: File[];
+
+
+  @BeforeUpdate()
+  updateTimestamp() {
+    this.updatedAt = new Date();
+  }
 }

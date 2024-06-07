@@ -25,7 +25,11 @@ export class LoginUserHandler implements ICommandHandler<LoginUserCommand> {
       const { email, password } = payload;
       this.logger.log(`Received loginUser command for email: ${email}`);
 
-      const user = await this.userRepository.findOne({ where: { email } });
+      const user = await this.userRepository.findOne({ where: { email },select:{
+        isVerified:true,
+        password:true,
+        id:true
+      } });
       if (!user) {
         throw new NotFoundException('User not found');
       }
