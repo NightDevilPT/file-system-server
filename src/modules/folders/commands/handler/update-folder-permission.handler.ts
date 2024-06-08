@@ -30,11 +30,10 @@ export class UpdateFolderPermissionHandler implements ICommandHandler<UpdateFold
         folder.isPrivate = isPrivate;
       }
 
+
       if (isPrivate === 'ONLY' && Array.isArray(userIds)) {
-        if (!userIds.includes(userId)) {
-          userIds.push(userId);
-        }
-        folder.userIds = Array.from(new Set([...(folder.userIds || []), ...userIds]));
+        const newUserSet = userIds.filter((items)=>items!==userId)
+        folder.userIds = Array.from(new Set([...(folder.userIds || []), ...newUserSet]));
       }
 
       const updatedFolder = await this.folderRepository.save(folder);

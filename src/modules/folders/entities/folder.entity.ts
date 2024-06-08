@@ -35,6 +35,9 @@ export class Folder {
   @Column({ default: PrivateEnum.PUBLIC, enum: PrivateEnum })
   isPrivate: PrivateEnum;
 
+  @Column({ type: 'uuid', nullable: true })
+  createdBy: string;
+
   @Column({ type: 'uuid', array: true, nullable: true })
   userIds: string[];
 

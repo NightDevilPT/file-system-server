@@ -1,17 +1,28 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsArray, IsEmail } from 'class-validator';
+import { IsArray, IsEmail, IsString, IsUUID } from 'class-validator';
 import { FolderEnum, PrivateEnum } from '../entities/folder.entity';
+import { Transform, Type } from 'class-transformer';
 
 export class UpdateFolderPermissionDto {
-  @ApiProperty({enum:PrivateEnum, example:[] , description: 'Permission level for the folder' })
+  @ApiProperty({
+    enum: PrivateEnum,
+    example: PrivateEnum.PUBLIC,
+    description: 'Permission level for the folder',
+  })
   isPrivate: PrivateEnum;
 
   @ApiProperty({
-    example: [],
+    description: 'Array of UUID strings',
     type: [String],
-    description: 'Array of user emails',
+    isArray: true,
   })
   @IsArray()
-  @IsEmail({}, { each: true })
-  userIds: string[];
+  @IsUUID('4', { each: true })
+  @Transform(({ value }) => {
+    if (typeof value === 'string') {
+      return value.split(',').map((item: string) => item.trim());
+    }
+    return value;
+  })
+  userIds: string;
 }

@@ -9,6 +9,7 @@ import { Folder } from './entities/folder.entity';
 import { Profile } from '../profiles/entities/profile.entity';
 import { JwtAuthService } from 'src/services/jwt/jwt.service';
 import { FolderCommands } from './commands';
+import { FoldersQueries } from './queries';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Profile, Folder]), CqrsModule],
@@ -19,6 +20,7 @@ import { FolderCommands } from './commands';
     JwtAuthService,
     JwtService,
     ...FolderCommands,
+    ...FoldersQueries
   ],
 })
 export class FoldersModule {}
