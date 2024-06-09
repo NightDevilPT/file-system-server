@@ -27,7 +27,7 @@ export class UpdateFolderPermissionHandler implements ICommandHandler<UpdateFold
       }
 
       if (isPrivate !== undefined) {
-        folder.isPrivate = isPrivate;
+        folder.isAccessable = isPrivate;
       }
 
 

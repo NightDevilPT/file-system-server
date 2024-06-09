@@ -56,7 +56,7 @@ export class CreateFolderHandler
         folder.resourceId = findProfile.id;
       }
 
-      folder.isPrivate = PrivateEnum.PRIVATE;
+      folder.isAccessable = PrivateEnum.PRIVATE;
       folder.createdBy = userId;
 
       const savedFolder = await this.folderRepository.save(folder);

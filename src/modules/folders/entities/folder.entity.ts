@@ -32,17 +32,20 @@ export class Folder {
   @Column({ default: FolderEnum.FOLDER, enum: FolderEnum })
   type: FolderEnum;
 
+  @Column({ default: false, type:Boolean })
+  isTrash: boolean;
+
   @Column({ default: PrivateEnum.PUBLIC, enum: PrivateEnum })
-  isPrivate: PrivateEnum;
+  isAccessable: PrivateEnum;
+
+  @Column({ type: 'uuid', array: true, nullable: true })
+  userIds: string[];
 
   @Column({ type: 'uuid', nullable: true })
   createdBy: string;
 
   @Column({ type: 'uuid', nullable: true })
   resourceId: string;
-
-  @Column({ type: 'uuid', array: true, nullable: true })
-  userIds: string[];
 
   @Column({ default: () => 'CURRENT_TIMESTAMP' })
   createdAt: Date;
