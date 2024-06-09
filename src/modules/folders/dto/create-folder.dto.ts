@@ -14,21 +14,8 @@ export class CreateFolderDto {
   @IsEnum(FolderEnum)
   type: FolderEnum;
 
-  @ApiProperty({ example: 'uuid-of-parent-folder', required: false })
+  @ApiProperty({ example: null, required: false })
   @IsOptional()
   @IsString()
-  @IsUUID()
-  @OneOrTheOther('parentProfileId', {
-    message: 'Either parentFolderId or parentProfileId must be provided, but not both.',
-  })
   parentFolderId?: string;
-
-  @ApiProperty({ example: 'uuid-of-profile', required: false })
-  @IsOptional()
-  @IsString()
-  @IsUUID()
-  @OneOrTheOther('parentFolderId', {
-    message: 'Either parentProfileId or parentFolderId must be provided, but not both.',
-  })
-  parentProfileId?: string;
 }

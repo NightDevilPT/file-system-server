@@ -38,6 +38,9 @@ export class Folder {
   @Column({ type: 'uuid', nullable: true })
   createdBy: string;
 
+  @Column({ type: 'uuid', nullable: true })
+  resourceId: string;
+
   @Column({ type: 'uuid', array: true, nullable: true })
   userIds: string[];
 

@@ -7,14 +7,11 @@ import { CreateFolderCommand } from './commands/impl/create-folder.command';
 import { UpdateFolderCommand } from './commands/impl/update-folder.command';
 import { UpdateFolderPermissionDto } from './dto/update-user-permission.dto';
 import { UpdateFolderPermissionCommand } from './commands/impl/update-folder-permission.command';
-import { GetFoldersQuery } from './queries/impl/get-all-folder.command';
-import { GetFolderByIdQuery } from './queries/impl/get-folder-by-id.command';
 
 @Injectable()
 export class FoldersService {
   constructor(
     private readonly commandBus: CommandBus,
-    private readonly queryBus: QueryBus,
   ) {}
 
   async create(
@@ -48,13 +45,5 @@ export class FoldersService {
         folderId,
       ),
     );
-  }
-
-  async getFolders(page: number, limit: number) {
-    return this.queryBus.execute(new GetFoldersQuery(page,limit));
-  }
-
-  async getFolderById(folderId: string,userId:string) {
-    return this.queryBus.execute(new GetFolderByIdQuery(folderId,userId));
   }
 }
