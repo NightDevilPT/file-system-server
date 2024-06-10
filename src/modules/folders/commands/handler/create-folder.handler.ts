@@ -3,9 +3,10 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { BadRequestException, Logger, NotFoundException } from '@nestjs/common';
 import { Profile } from 'src/modules/profiles/entities/profile.entity';
 import { Repository } from 'typeorm';
-import { Folder, PrivateEnum } from '../../entities/folder.entity';
+import { Folder } from '../../entities/folder.entity';
 import { CreateFolderCommand } from '../impl/create-folder.command';
 import { isUUID } from 'class-validator';
+import { PrivateEnum } from 'src/interfaces/enum';
 
 @CommandHandler(CreateFolderCommand)
 export class CreateFolderHandler

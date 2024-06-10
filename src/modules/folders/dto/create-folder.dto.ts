@@ -1,8 +1,8 @@
 // create-folder.dto.ts
 import { ApiProperty } from '@nestjs/swagger';
-import { ArrayNotEmpty, IsArray, IsEnum, IsNotEmpty, IsOptional, IsString, IsUUID } from 'class-validator';
-import { FolderEnum, PrivateEnum } from '../entities/folder.entity';
-import { OneOrTheOther } from 'src/decorator/validate-one-or-other.decorator';
+import { IsEnum, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+
+import { FolderEnum } from 'src/interfaces/enum';
 
 export class CreateFolderDto {
   @ApiProperty({ example: 'New Folder' })

@@ -24,21 +24,15 @@ import { Folder } from './entities/folder.entity';
 import { UpdateFolderPermissionDto } from './dto/update-user-permission.dto';
 
 @ApiTags('Folder Controller')
-@ApiBearerAuth()
 @Controller('folder')
 @UseGuards(AuthGuard)
+@ApiBearerAuth()
 export class FoldersController {
   constructor(private readonly foldersService: FoldersService) {}
 
   @Post()
   @ApiConsumes('application/x-www-form-urlencoded')
   @ApiOperation({ summary: 'Create a Profile' })
-  @ApiResponse({
-    status: 201,
-    description: 'The user has been successfully created.',
-  })
-  @ApiResponse({ status: 400, description: 'Bad Request.' })
-  @ApiResponse({ status: 401, description: 'Unauthorized.' })
   create(
     @Body() createFolderDto: CreateFolderDto,
     @Req() req: UserRequest,

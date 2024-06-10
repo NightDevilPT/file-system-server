@@ -17,13 +17,4 @@ export class UpdateFolderDto {
     message: 'Either parentFolderId or parentProfileId must be provided, but not both.',
   })
   parentFolderId?: string;
-
-  @ApiProperty({ example: 'uuid-of-profile', required: false })
-  @IsOptional()
-  @IsString()
-  @IsUUID()
-  @OneOrTheOther('parentFolderId', {
-    message: 'Either parentProfileId or parentFolderId must be provided, but not both.',
-  })
-  parentProfileId?: string;
 }

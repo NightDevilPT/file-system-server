@@ -40,7 +40,7 @@ export class Profile {
   @OneToMany(() => Folder, (folder) => folder.parentProfile, { cascade: true })
   folders: Folder[];
 
-  @OneToMany(() => File, (file) => file.profile, { cascade: true })
+  @OneToMany(() => File, (file) => file.parentProfile, { cascade: true })
   files: File[];
 
   @OneToOne(() => User, (user) => user.profile, {

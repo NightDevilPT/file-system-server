@@ -1,9 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsArray, IsEmail, IsString, IsUUID } from 'class-validator';
+import { IsArray, IsUUID } from 'class-validator';
 import { Transform, Type } from 'class-transformer';
 import { PrivateEnum } from 'src/interfaces/enum';
 
-export class UpdateFolderPermissionDto {
+export class UpdateFilePermissionDto {
   @ApiProperty({
     enum: PrivateEnum,
     example: PrivateEnum.PUBLIC,

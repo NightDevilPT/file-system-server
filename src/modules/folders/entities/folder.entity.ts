@@ -1,3 +1,4 @@
+import { FolderEnum, PrivateEnum } from 'src/interfaces/enum';
 import { File } from 'src/modules/files/entities/file.entity';
 import { Profile } from 'src/modules/profiles/entities/profile.entity';
 import {
@@ -9,17 +10,6 @@ import {
   JoinColumn,
   BeforeUpdate,
 } from 'typeorm';
-
-export enum FolderEnum {
-  FOLDER = 'FOLDER',
-  FILE = 'FILE',
-}
-
-export enum PrivateEnum {
-  PUBLIC = 'PUBLIC',
-  PRIVATE = 'PRIVATE',
-  ONLY = 'ONLY',
-}
 
 @Entity('folders')
 export class Folder {
@@ -64,7 +54,7 @@ export class Folder {
   @OneToMany(() => Folder, (folder) => folder.parentFolder)
   childFolders: Folder[];
 
-  @OneToMany(() => File, (file) => file.folder, { cascade: true })
+  @OneToMany(() => File, (file) => file.parentFolder, { cascade: true })
   files: File[];
 
 

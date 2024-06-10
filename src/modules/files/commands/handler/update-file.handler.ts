@@ -3,57 +3,61 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { BadRequestException, Logger, NotFoundException } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { Profile } from 'src/modules/profiles/entities/profile.entity';
-import { Folder } from '../../entities/folder.entity';
-import { UpdateFolderCommand } from '../impl/update-folder.command';
 import { isUUID } from 'class-validator';
+import { UpdateFileCommand } from '../impl/update-file.command';
+import { Folder } from 'src/modules/folders/entities/folder.entity';
+import { File } from '../../entities/file.entity';
 
-@CommandHandler(UpdateFolderCommand)
-export class UpdateFolderHandler
-  implements ICommandHandler<UpdateFolderCommand>
+@CommandHandler(UpdateFileCommand)
+export class UpdateFileHandler
+  implements ICommandHandler<UpdateFileCommand>
 {
-  private readonly logger = new Logger(UpdateFolderHandler.name);
+  private readonly logger = new Logger(UpdateFileHandler.name);
 
   constructor(
     @InjectRepository(Folder)
     private readonly folderRepository: Repository<Folder>,
+	@InjectRepository(File)
+    private readonly fileRepo: Repository<File>,
     @InjectRepository(Profile)
     private readonly profileRepository: Repository<Profile>,
   ) {}
 
-  async execute(command: UpdateFolderCommand): Promise<Folder> {
+  async execute(command: UpdateFileCommand) {
     this.logger.log(
-      `Executing UpdateFolderCommand for folder ${command.folderId} by user ${command.userId}`,
+      `Executing UpdateFileCommand for File ${command.fileId} by user ${command.userId}`,
     );
 
-    const { payload, userId, folderId } = command;
+    const { payload, userId, fileId } = command;
     const { parentFolderId, name } = payload;
 
     try {
-      const folder = await this.folderRepository.findOne({
-        where: { id: folderId },
+      const file = await this.fileRepo.findOne({
+        where: { id: fileId },
       });
+	  console.log(fileId,'FILEDATA')
 
-      if (!folder) {
+      if (!file) {
         throw new Error('Folder not found');
       }
 
-      if (name && name.length > 0) {
-        folder.name = name;
-      }
+	  if(name && name.length>0){
+		file.name=name;
+	  }
 
       if (parentFolderId) {
         if (!isUUID(parentFolderId)) {
           throw new BadRequestException('Invalid parentFolderId UUID');
         }
-        const findFolder = await this.folderRepository.findOne({
+        const findFile = await this.folderRepository.findOne({
           where: { id: parentFolderId },
         });
-        if (!findFolder) {
+        if (!findFile) {
           throw new NotFoundException(`Folder not found ${parentFolderId}`);
         }
-        folder.parentFolder = findFolder;
-        folder.resourceId = findFolder.id;
-        folder.parentProfile = null;
+        file.parentFolder = findFile;
+        file.resourceId = findFile.id;
+        file.parentProfile = null;
       } else {
         const findProfile = await this.profileRepository.findOne({
           where: {
@@ -65,19 +69,19 @@ export class UpdateFolderHandler
         if (!findProfile) {
           throw new NotFoundException(`Profile not found`);
         }
-        folder.parentProfile = findProfile;
-        folder.resourceId = findProfile.id;
-        folder.parentFolder = null;
+        file.parentProfile = findProfile;
+        file.resourceId = findProfile.id;
+        file.parentFolder = null;
       }
 
-      const updatedFolder = await this.folderRepository.save(folder);
+      const updatedFolder = await this.fileRepo.save(file);
       this.logger.log(
-        `UpdateFolderCommand executed successfully for folder ${command.folderId}`,
+        `UpdateFolderCommand executed successfully for folder ${command.fileId}`,
       );
-      return updatedFolder;
+      return {updatedFolder,file};
     } catch (error) {
       this.logger.error(
-        `Failed to execute UpdateFolderCommand for folder ${command.folderId}`,
+        `Failed to execute UpdateFolderCommand for folder ${command.fileId}`,
         error.stack,
       );
       throw error;
