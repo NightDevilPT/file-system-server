@@ -1,111 +1,82 @@
 import { Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import { SelectQueryBuilder } from 'typeorm';
+import { Repository, SelectQueryBuilder } from 'typeorm';
 
 @Injectable()
 export class QueryService {
-  private databaseType: string;
+  generateQuery<T>(
+    repository: Repository<T>,
+    filters: Record<string, any>,
+    sort?: string,
+    page?: number,
+    limit?: number,
+    relations?: string[]
+  ) {
+    const entityName = repository.metadata.name;
+    const queryBuilder = repository.createQueryBuilder(entityName);
 
-  constructor(private configService: ConfigService) {
-    this.databaseType = this.configService.get<string>('DATABASE_TYPE');
-  }
+    this.buildFilters(queryBuilder, filters);
 
-  buildQuery(filters: Record<string, any>, populate?: string): any {
-    // if (this.databaseType === 'mongo') {
-    //   return this.buildMongoQuery(filters, populate);
-    // } else {
-    //   return this.buildPostgresQuery(filters, populate);
-    // }
-    return this.buildMongoQuery(filters, populate);
-  }
-
-  private buildMongoQuery(filters: Record<string, any>, populate?: string): any {
-    const query: any = {};
-    const populateFields = populate ? populate.split(',') : [];
-
-    if (filters) {
-      for (const [field, criteria] of Object.entries(filters)) {
-        if (typeof criteria === 'object') {
-          for (const [operator, value] of Object.entries(criteria)) {
-            if (!query[field]) {
-              query[field] = {};
-            }
-            switch (operator) {
-              case '$eq':
-                query[field] = value;
-                break;
-              case '$ne':
-              case '$gt':
-              case '$gte':
-              case '$lt':
-              case '$lte':
-              case '$in':
-              case '$nin':
-                query[field][operator] = value;
-                break;
-              default:
-                throw new Error(`Unsupported operator: ${operator}`);
-            }
-          }
-        } else if (typeof criteria === 'string') {
-          query[field] = { $regex: new RegExp(`^${criteria}`), $options: 'i' }; // Partial matching for Mongo
-        } else {
-          query[field] = criteria;
-        }
+    if (sort) {
+      const sortOptions = this.buildSortOptions(sort);
+      for (const [field, order] of Object.entries(sortOptions)) {
+        queryBuilder.addOrderBy(`${queryBuilder.alias}.${field}`, order as 'ASC' | 'DESC');
       }
     }
 
-    return { query, populateFields };
-  }
-
-  private buildPostgresQuery(filters: Record<string, any>, populate?: string): SelectQueryBuilder<any> {
-    let queryBuilder: SelectQueryBuilder<any>; // Initialize this with your query builder
-    const populateFields = populate ? populate.split(',') : [];
-
-    if (filters) {
-      Object.entries(filters).forEach(([field, condition]) => {
-        if (typeof condition === 'object') {
-          Object.entries(condition).forEach(([operator, value]) => {
-            switch (operator) {
-              case '$eq':
-                queryBuilder.andWhere(`${field} = :${field}`, { [field]: value });
-                break;
-              case '$ne':
-                queryBuilder.andWhere(`${field} != :${field}`, { [field]: value });
-                break;
-              case '$gt':
-                queryBuilder.andWhere(`${field} > :${field}`, { [field]: value });
-                break;
-              case '$gte':
-                queryBuilder.andWhere(`${field} >= :${field}`, { [field]: value });
-                break;
-              case '$lt':
-                queryBuilder.andWhere(`${field} < :${field}`, { [field]: value });
-                break;
-              case '$lte':
-                queryBuilder.andWhere(`${field} <= :${field}`, { [field]: value });
-                break;
-              case '$in':
-                queryBuilder.andWhere(`${field} IN (:...${field})`, { [field]: value });
-                break;
-              case '$nin':
-                queryBuilder.andWhere(`${field} NOT IN (:...${field})`, { [field]: value });
-                break;
-              default:
-                throw new Error(`Unsupported operator: ${operator}`);
-            }
-          });
-        } else {
-          queryBuilder.andWhere(`${field} = :${field}`, { [field]: condition });
-        }
-      });
+    if (page && limit) {
+      queryBuilder.skip((page - 1) * limit).take(limit);
     }
 
-    // Apply population
-    populateFields.forEach(field => {
-      queryBuilder.leftJoinAndSelect(field, field);
-    });
+    if (relations && Array.isArray(relations)) {
+      relations.forEach(relation => queryBuilder.leftJoinAndSelect(`${queryBuilder.alias}.${relation}`, relation));
+    }
 
-    return queryBuilder;
+    return queryBuilder.getMany();
+  }
+
+  private buildFilters<T>(queryBuilder: SelectQueryBuilder<T>, filters: Record<string, any>) {
+    Object.entries(filters).forEach(([field, conditions]) => {
+      if (typeof conditions === 'object' && conditions !== null) {
+        Object.entries(conditions).forEach(([operator, value]) => {
+          switch (operator) {
+            case 'eq':
+              queryBuilder.andWhere(`${queryBuilder.alias}.${field} = :${field}`, { [field]: value });
+              break;
+            case 'ne':
+              queryBuilder.andWhere(`${queryBuilder.alias}.${field} != :${field}`, { [field]: value });
+              break;
+            case 'gt':
+              queryBuilder.andWhere(`${queryBuilder.alias}.${field} > :${field}`, { [field]: value });
+              break;
+            case 'lt':
+              queryBuilder.andWhere(`${queryBuilder.alias}.${field} < :${field}`, { [field]: value });
+              break;
+            case 'gte':
+              queryBuilder.andWhere(`${queryBuilder.alias}.${field} >= :${field}`, { [field]: value });
+              break;
+            case 'lte':
+              queryBuilder.andWhere(`${queryBuilder.alias}.${field} <= :${field}`, { [field]: value });
+              break;
+            case 'like':
+              queryBuilder.andWhere(`${queryBuilder.alias}.${field} LIKE :${field}`, { [field]: `%${value}%` });
+              break;
+            default:
+              break;
+          }
+        });
+      } else {
+        queryBuilder.andWhere(`${queryBuilder.alias}.${field} ILIKE :${field}`, { [field]: `%${conditions}%` });
+      }
+    });
+  }
+
+  private buildSortOptions(sort: string) {
+    const sortOptions: Record<string, 'ASC' | 'DESC'> = {};
+    const sortFields = sort.split(',');
+    sortFields.forEach(field => {
+      const [key, order] = field.split(':');
+      sortOptions[key] = order?.toUpperCase() === 'DESC' ? 'DESC' : 'ASC';
+    });
+    return sortOptions;
   }
 }
