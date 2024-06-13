@@ -26,11 +26,17 @@ export class File {
   @Column({ default: PrivateEnum.PUBLIC, enum: PrivateEnum })
   isAccessable: PrivateEnum;
 
+  @Column({ default: null,type:String })
+  shareToken: string;
+
   @Column({ type: 'uuid', array: true, nullable: true })
   userIds: string[];
 
   @Column({ nullable: false })
   resourceId: string;
+
+  @Column({ type: 'jsonb', nullable: true })
+  breadcrumb: { name: string, id: string }[];
   
   @Column({ nullable: false })
   createdBy: string;

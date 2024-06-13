@@ -5,11 +5,9 @@ import { GetResourcesQuery } from './queries/impl/get-resources.query';
 
 @Injectable()
 export class BffService {
-  constructor(
-    private readonly queryBus: QueryBus
-  ) {}
+  constructor(private readonly queryBus: QueryBus) {}
 
-  getData(query:QueryDto) {
-    return this.queryBus.execute(new GetResourcesQuery(query))
+  getData(query: QueryDto, userId: string) {
+    return this.queryBus.execute(new GetResourcesQuery(query,userId));
   }
 }

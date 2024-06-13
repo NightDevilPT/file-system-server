@@ -7,6 +7,8 @@ import { Folder } from '../../entities/folder.entity';
 import { CreateFolderCommand } from '../impl/create-folder.command';
 import { isUUID } from 'class-validator';
 import { PrivateEnum } from 'src/interfaces/enum';
+import { HashPasswordService } from 'src/services/hash-password/hash-password.service';
+import { v4 as uuidv4 } from 'uuid';
 
 @CommandHandler(CreateFolderCommand)
 export class CreateFolderHandler
@@ -19,6 +21,7 @@ export class CreateFolderHandler
     private readonly folderRepository: Repository<Folder>,
     @InjectRepository(Profile)
     private readonly profileRepository: Repository<Profile>,
+    private readonly hashService: HashPasswordService,
   ) {}
 
   async execute(command: CreateFolderCommand): Promise<Folder> {
@@ -28,7 +31,7 @@ export class CreateFolderHandler
     const { parentFolderId, ...folderData } = payload;
 
     try {
-      const folder = this.folderRepository.create(folderData);
+      const folder = this.folderRepository.create({...folderData,id: uuidv4()});
 
       if (parentFolderId) {
         if (!isUUID(parentFolderId)) {
@@ -42,6 +45,7 @@ export class CreateFolderHandler
         }
         folder.parentFolder = findFolder;
         folder.resourceId = findFolder.id;
+        folder.breadcrumb = [...findFolder.breadcrumb,{ name: folder.name, id: folder.id }];
       } else {
         const findProfile = await this.profileRepository.findOne({
           where: {
@@ -55,10 +59,14 @@ export class CreateFolderHandler
         }
         folder.parentProfile = findProfile;
         folder.resourceId = findProfile.id;
+        folder.breadcrumb = [{ name: folder.name, id: folder.id }];
       }
 
       folder.isAccessable = PrivateEnum.PRIVATE;
       folder.createdBy = userId;
+      folder.shareToken = await this.hashService.hashPassword(
+        `${new Date().getTime()}`,
+      );
 
       const savedFolder = await this.folderRepository.save(folder);
       this.logger.log(

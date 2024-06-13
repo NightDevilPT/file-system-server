@@ -15,7 +15,7 @@ export class GetResourcesHandler implements IQueryHandler<GetResourcesQuery> {
     private readonly folderRepo: Repository<Folder>,
   ) {}
 
-  async execute({ payload }: GetResourcesQuery) {
+  async execute({ payload, userId }: GetResourcesQuery) {
     const { filters, sort, limit, resourceId } = payload;
     const page = Number(payload.page);
 
@@ -32,7 +32,8 @@ export class GetResourcesHandler implements IQueryHandler<GetResourcesQuery> {
       .createQueryBuilder('folder')
       .leftJoinAndSelect('folder.parentFolder', 'parentFolder')
       .leftJoinAndSelect('folder.parentProfile', 'parentProfile')
-      .where('folder.resourceId = :resourceId', { resourceId })
+      .andWhere('folder.resourceId = :resourceId', { resourceId })
+      .andWhere('folder.createdBy = :userId', { userId })
       .andWhere(filters ? 'folder.name LIKE :filter' : '1=1', filterQuery)
       .orderBy(`folder.${column}`, order)
       .skip(skip)
@@ -52,7 +53,8 @@ export class GetResourcesHandler implements IQueryHandler<GetResourcesQuery> {
       .createQueryBuilder('file')
       .leftJoinAndSelect('file.parentFolder', 'parentFolder')
       .leftJoinAndSelect('file.parentProfile', 'parentProfile')
-      .where('file.resourceId = :resourceId', { resourceId })
+      .andWhere('file.resourceId = :resourceId', { resourceId })
+      .andWhere('file.createdBy = :userId', { userId })
       .andWhere(filters ? 'file.name LIKE :filter' : '1=1', filterQuery)
       .orderBy(`file.${column}`, order)
       .skip(skip)
@@ -70,7 +72,8 @@ export class GetResourcesHandler implements IQueryHandler<GetResourcesQuery> {
     // Calculate metadata
     const totalResults = folders.length + files.length;
     const totalPages = Math.ceil(totalResults / limit);
-    const hasNext = ((page * limit) < totalResults) && (folders.length > 0 || files.length > 0);
+    const hasNext =
+      page * limit < totalResults && (folders.length > 0 || files.length > 0);
     const nextPage = hasNext ? page + 1 : null;
     const hasPrevious = page > 1;
     const previousPage = hasPrevious ? page - 1 : null;

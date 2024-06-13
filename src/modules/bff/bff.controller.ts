@@ -1,10 +1,22 @@
-import { Controller, Query, Get, Param } from '@nestjs/common';
-import { ApiQuery, ApiTags } from '@nestjs/swagger';
+import {
+  Controller,
+  Query,
+  Get,
+  Param,
+  UseGuards,
+  Req,
+  UnauthorizedException,
+} from '@nestjs/common';
+import { ApiBearerAuth, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { BffService } from './bff.service';
 import { FilterDto, QueryDto } from './dtos/query.dto';
+import { AuthGuard } from 'src/guards/auth.guard';
+import { UserRequest } from '../profiles/interfaces/profile.interfaces';
 
 @ApiTags('Bff Controller')
 @Controller('bff')
+@UseGuards(AuthGuard)
+@ApiBearerAuth()
 export class BffController {
   constructor(private readonly bffService: BffService) {}
 
@@ -35,19 +47,24 @@ export class BffController {
   })
   async getData(
     @Param('resourceId') resourceId: string,
-    @Query('filters') filters:string,
+    @Query('filters') filters: string,
     @Query('sort') sort: string,
-    @Query('page') page: number=1,
-    @Query('limit') limit: number=10,
+    @Query('page') page: number = 1,
+    @Query('limit') limit: number = 10,
+    @Req() req: UserRequest,
   ) {
+    const userId = req.user?.id;
+    if (!userId) {
+      throw new UnauthorizedException('User ID not found in the request');
+    }
     const query: QueryDto = {
       resourceId,
       filters,
       sort,
       page,
-      limit
+      limit,
     };
 
-    return this.bffService.getData(query);
+    return this.bffService.getData(query,userId);
   }
 }

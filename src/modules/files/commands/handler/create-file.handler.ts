@@ -13,6 +13,8 @@ import { File } from '../../entities/file.entity';
 import { Profile } from 'src/modules/profiles/entities/profile.entity';
 import { Folder } from 'src/modules/folders/entities/folder.entity';
 import { FirebaseService } from 'src/services/firebase-service/firebase.service';
+import { HashPasswordService } from 'src/services/hash-password/hash-password.service';
+import { v4 as uuidv4 } from 'uuid';
 
 @CommandHandler(CreateFileCommand)
 export class CreateFileHandler implements ICommandHandler<CreateFileCommand> {
@@ -26,6 +28,7 @@ export class CreateFileHandler implements ICommandHandler<CreateFileCommand> {
     private readonly profileRepository: Repository<Profile>,
     @InjectRepository(Folder)
     private readonly folderRepository: Repository<Folder>,
+    private readonly hashService:HashPasswordService
   ) {}
 
   async execute(command: CreateFileCommand): Promise<any> {
@@ -41,6 +44,7 @@ export class CreateFileHandler implements ICommandHandler<CreateFileCommand> {
     fileModel.name = name;
     fileModel.size = file.size;
     fileModel.createdBy = userId;
+    fileModel.id = uuidv4()
 
     try {
       if (parentFolderId) {
@@ -57,6 +61,7 @@ export class CreateFileHandler implements ICommandHandler<CreateFileCommand> {
         }
         fileModel.parentFolder = folder;
         fileModel.resourceId = folder.id;
+        folder.breadcrumb = [...folder.breadcrumb,{ name: fileModel.name, id: fileModel.id }];
       } else {
         console.log('parenELSEtFolderId');
         this.logger.log(`Looking for profile for user ID: ${userId}`);
@@ -75,9 +80,10 @@ export class CreateFileHandler implements ICommandHandler<CreateFileCommand> {
 
       const fileUrl = await this.firebaseService.uploadFile(file);
 
-      console.log('parentFolderId');
       this.logger.log(`File uploaded successfully to Firebase: ${fileUrl}`);
       fileModel.data = fileUrl;
+      fileModel.shareToken = await this.hashService.hashPassword(`${new Date().getTime()}`)
+
       this.logger.log('Saving file entity to the database');
       const savedFile = await this.fileRepository.save(fileModel);
       this.logger.log(

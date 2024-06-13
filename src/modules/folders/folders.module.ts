@@ -9,6 +9,7 @@ import { Folder } from './entities/folder.entity';
 import { Profile } from '../profiles/entities/profile.entity';
 import { JwtAuthService } from 'src/services/jwt/jwt.service';
 import { FolderCommands } from './commands';
+import { HashPasswordService } from 'src/services/hash-password/hash-password.service';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Profile, Folder]), CqrsModule],
@@ -18,6 +19,7 @@ import { FolderCommands } from './commands';
     OneOrTheOtherConstraint,
     JwtAuthService,
     JwtService,
+    HashPasswordService,
     ...FolderCommands
   ],
 })

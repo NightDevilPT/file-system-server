@@ -31,6 +31,12 @@ export class Folder {
   @Column({ type: 'uuid', array: true, nullable: true })
   userIds: string[];
 
+  @Column({ default: null,type:String })
+  shareToken: string;
+
+  @Column({ type: 'jsonb', nullable: true })
+  breadcrumb: { name: string, id: string }[];
+
   @Column({ type: 'uuid', nullable: true })
   createdBy: string;
 
