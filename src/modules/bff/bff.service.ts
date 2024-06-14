@@ -7,7 +7,7 @@ import { GetResourcesQuery } from './queries/impl/get-resources.query';
 export class BffService {
   constructor(private readonly queryBus: QueryBus) {}
 
-  getData(query: QueryDto, userId: string) {
+  getResourceByIdData(query: QueryDto, userId: string) {
     return this.queryBus.execute(new GetResourcesQuery(query,userId));
   }
 }

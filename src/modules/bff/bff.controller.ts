@@ -45,7 +45,7 @@ export class BffController {
     required: false,
     description: 'Sorting criteria for the query',
   })
-  async getData(
+  async getResourceByIdData(
     @Param('resourceId') resourceId: string,
     @Query('filters') filters: string,
     @Query('sort') sort: string,
@@ -65,6 +65,6 @@ export class BffController {
       limit,
     };
 
-    return this.bffService.getData(query,userId);
+    return this.bffService.getResourceByIdData(query,userId);
   }
 }

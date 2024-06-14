@@ -28,7 +28,7 @@ export class CreateFileHandler implements ICommandHandler<CreateFileCommand> {
     private readonly profileRepository: Repository<Profile>,
     @InjectRepository(Folder)
     private readonly folderRepository: Repository<Folder>,
-    private readonly hashService:HashPasswordService
+    private readonly hashService: HashPasswordService,
   ) {}
 
   async execute(command: CreateFileCommand): Promise<any> {
@@ -36,15 +36,15 @@ export class CreateFileHandler implements ICommandHandler<CreateFileCommand> {
     const { parentFolderId, name } = createFileDto;
     this.logger.log('Executing CreateFileCommand');
 
-	if(!file){
-		throw new GoneException(`File not available`)
-	}
+    if (!file) {
+      throw new GoneException(`File not available`);
+    }
 
     const fileModel = new File();
     fileModel.name = name;
     fileModel.size = file.size;
     fileModel.createdBy = userId;
-    fileModel.id = uuidv4()
+    fileModel.id = uuidv4();
 
     try {
       if (parentFolderId) {
@@ -61,7 +61,10 @@ export class CreateFileHandler implements ICommandHandler<CreateFileCommand> {
         }
         fileModel.parentFolder = folder;
         fileModel.resourceId = folder.id;
-        folder.breadcrumb = [...folder.breadcrumb,{ name: fileModel.name, id: fileModel.id }];
+        folder.breadcrumb = [
+          ...folder.breadcrumb,
+          { name: fileModel.name, id: fileModel.id },
+        ];
       } else {
         console.log('parenELSEtFolderId');
         this.logger.log(`Looking for profile for user ID: ${userId}`);
@@ -82,7 +85,9 @@ export class CreateFileHandler implements ICommandHandler<CreateFileCommand> {
 
       this.logger.log(`File uploaded successfully to Firebase: ${fileUrl}`);
       fileModel.data = fileUrl;
-      fileModel.shareToken = await this.hashService.hashPassword(`${new Date().getTime()}`)
+      fileModel.shareToken =
+        (await this.hashService.hashPassword(`${new Date().getTime()}`)) +
+        ':FILE';
 
       this.logger.log('Saving file entity to the database');
       const savedFile = await this.fileRepository.save(fileModel);

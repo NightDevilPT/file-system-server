@@ -66,7 +66,7 @@ export class CreateFolderHandler
       folder.createdBy = userId;
       folder.shareToken = await this.hashService.hashPassword(
         `${new Date().getTime()}`,
-      );
+      )+':FOLDER';
 
       const savedFolder = await this.folderRepository.save(folder);
       this.logger.log(
