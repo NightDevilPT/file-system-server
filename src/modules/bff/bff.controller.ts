@@ -65,6 +65,15 @@ export class BffController {
       limit,
     };
 
-    return this.bffService.getResourceByIdData(query,userId);
+    return this.bffService.getResourceByIdData(query, userId);
+  }
+
+  @Get('/share-resource/:token')
+  getResourceByToken(@Param('token') token: string, @Req() req: UserRequest) {
+    const userId = req.user?.id;
+    if (!userId) {
+      throw new UnauthorizedException('User ID not found in the request');
+    }
+    return this.bffService.getResourceByTokenData(token,userId);
   }
 }
