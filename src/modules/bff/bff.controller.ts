@@ -20,7 +20,7 @@ import { UserRequest } from '../profiles/interfaces/profile.interfaces';
 export class BffController {
   constructor(private readonly bffService: BffService) {}
 
-  @Get(':resourceId')
+  @Get('resource/:resourceId')
   @ApiQuery({
     name: 'filters',
     type: 'string',
@@ -74,6 +74,17 @@ export class BffController {
     if (!userId) {
       throw new UnauthorizedException('User ID not found in the request');
     }
-    return this.bffService.getResourceByTokenData(token,userId);
+    return this.bffService.getResourceByTokenData(token, userId);
+  }
+
+  @Get('count')
+  async getResourcesTypeCount(@Req() req: UserRequest) {
+    const userId = req?.user?.id;
+
+    if (!userId) {
+      throw new UnauthorizedException('User ID not found in the request');
+    }
+
+    return this.bffService.getResourcesTypeCount(userId);
   }
 }

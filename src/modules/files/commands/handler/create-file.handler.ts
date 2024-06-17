@@ -9,7 +9,7 @@ import {
   GoneException,
 } from '@nestjs/common';
 import { CreateFileCommand } from '../impl/create-file.command';
-import { File } from '../../entities/file.entity';
+import { File, FileTypeEnum } from '../../entities/file.entity';
 import { Profile } from 'src/modules/profiles/entities/profile.entity';
 import { Folder } from 'src/modules/folders/entities/folder.entity';
 import { FirebaseService } from 'src/services/firebase-service/firebase.service';
@@ -85,6 +85,7 @@ export class CreateFileHandler implements ICommandHandler<CreateFileCommand> {
 
       this.logger.log(`File uploaded successfully to Firebase: ${fileUrl}`);
       fileModel.data = fileUrl;
+      fileModel.fileType = this.getFileType(file)
       fileModel.shareToken =
         (await this.hashService.hashPassword(`${new Date().getTime()}`)) +
         ':FILE';
@@ -105,4 +106,25 @@ export class CreateFileHandler implements ICommandHandler<CreateFileCommand> {
       );
     }
   }
+
+  private getFileType(file: Express.Multer.File): FileTypeEnum {
+    const extension = file.originalname.split('.').pop().toLowerCase();
+    const mimeType = file.mimetype.toLowerCase();
+  
+    const imageExtensions = ['jpg', 'jpeg', 'png', 'gif', 'bmp'];
+    const documentExtensions = ['pdf', 'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx'];
+    const videoExtensions = ['mp4', 'avi', 'mkv', 'mov', 'wmv'];
+  
+    if (imageExtensions.includes(extension) || mimeType.startsWith('image/')) {
+      return FileTypeEnum.IMAGE;
+    }
+    if (documentExtensions.includes(extension) || mimeType.startsWith('application/')) {
+      return FileTypeEnum.DOCUMENT;
+    }
+    if (videoExtensions.includes(extension) || mimeType.startsWith('video/')) {
+      return FileTypeEnum.VIDEO;
+    }
+    return FileTypeEnum.OTHER;
+  }
+  
 }

@@ -3,6 +3,13 @@ import { Folder } from 'src/modules/folders/entities/folder.entity';
 import { Profile } from 'src/modules/profiles/entities/profile.entity';
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
 
+export enum FileTypeEnum{
+  IMAGE="IMAGE",
+  DOCUMENT="DOCUMENT",
+  VIDEO="VIDEO",
+  OTHER="OTHER"
+}
+
 @Entity('files')
 export class File {
   @PrimaryGeneratedColumn('uuid')
@@ -16,6 +23,9 @@ export class File {
 
   @Column({ nullable: false })
   data: string;
+
+  @Column({ nullable:false, enum:FileTypeEnum })
+  fileType:FileTypeEnum;
 
   @Column({ default: FolderEnum.FILE, enum: FolderEnum })
   type: FolderEnum;
