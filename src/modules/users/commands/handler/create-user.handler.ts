@@ -1,6 +1,5 @@
-import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
+import { CommandHandler, EventBus, ICommandHandler } from '@nestjs/cqrs';
 import { CreateUserCommand } from '../impl/create-user.command';
-import { UsersService } from '../../users.service';
 import { Logger } from '@nestjs/common';
 import { User } from '../../entities/user.entity';
 import { HashPasswordService } from 'src/services/hash-password/hash-password.service';
@@ -8,6 +7,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { MailService } from 'src/services/mails/mail.service';
 import { ConflictException } from '@nestjs/common/exceptions';
+import { CreateHistoryEvent } from 'src/modules/command-events/create-history.event';
+import { SharedEvents } from 'src/modules/command-events/events';
 
 @CommandHandler(CreateUserCommand)
 export class CreateUserHandler implements ICommandHandler<CreateUserCommand> {
@@ -18,6 +19,7 @@ export class CreateUserHandler implements ICommandHandler<CreateUserCommand> {
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
     private readonly mailService: MailService,
+    private readonly eventBus:EventBus
   ) {}
 
   async execute({ payload }: CreateUserCommand): Promise<any> {
@@ -53,6 +55,7 @@ export class CreateUserHandler implements ICommandHandler<CreateUserCommand> {
         savedUser.token,
       );
 
+      this.eventBus.publish(new CreateHistoryEvent(savedUser.id,SharedEvents.UserCreatedEvent))
       if (emailSent) {
         return { message: 'User created successfully and email sent' };
       } else {

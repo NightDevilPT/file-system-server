@@ -1,4 +1,4 @@
-import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
+import { CommandHandler, EventBus, ICommandHandler } from '@nestjs/cqrs';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { NotFoundException, GoneException, UnauthorizedException } from '@nestjs/common';
@@ -8,6 +8,8 @@ import { User } from '../../entities/user.entity';
 import { loginUserResponse } from '../../interfaces/user.interface';
 import { LoginUserCommand } from '../impl/login-user.command';
 import { Logger } from '@nestjs/common';
+import { CreateHistoryEvent } from 'src/modules/command-events/create-history.event';
+import { SharedEvents } from 'src/modules/command-events/events';
 
 @CommandHandler(LoginUserCommand)
 export class LoginUserHandler implements ICommandHandler<LoginUserCommand> {
@@ -18,6 +20,7 @@ export class LoginUserHandler implements ICommandHandler<LoginUserCommand> {
     private readonly userRepository: Repository<User>,
     private readonly hashPasswordService: HashPasswordService,
     private readonly jwtService: JwtAuthService,
+    private readonly eventBus:EventBus
   ) {}
 
   async execute({ payload }: LoginUserCommand): Promise<loginUserResponse> {
@@ -44,6 +47,13 @@ export class LoginUserHandler implements ICommandHandler<LoginUserCommand> {
       }
 
       const jwtToken = await this.jwtService.generateToken({ id: user.id });
+
+      this.eventBus.publish(
+        new CreateHistoryEvent(
+          user.id,
+          SharedEvents.UserLoginEvent,
+        ),
+      );
 
       return {
         message: 'Login successful',
