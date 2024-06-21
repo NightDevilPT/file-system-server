@@ -1,6 +1,6 @@
 // handlers/create-profile.handler.ts
 
-import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
+import { CommandHandler, EventBus, ICommandHandler } from '@nestjs/cqrs';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import {
@@ -11,6 +11,8 @@ import { Profile } from '../../entities/profile.entity';
 import { CreateProfileCommand } from '../impl/create-profile.command';
 import { ProfileResponse, StorageType } from '../../interfaces/profile.interfaces';
 import { User } from 'src/modules/users/entities/user.entity';
+import { CreateHistoryEvent } from 'src/modules/command-events/create-history.event';
+import { SharedEvents } from 'src/modules/command-events/events';
 
 @CommandHandler(CreateProfileCommand)
 export class CreateProfileHandler
@@ -23,6 +25,7 @@ export class CreateProfileHandler
     private readonly profileRepository: Repository<Profile>,
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
+    private readonly eventBus:EventBus
   ) {}
 
   async execute(command: CreateProfileCommand): Promise<ProfileResponse> {
@@ -46,6 +49,8 @@ export class CreateProfileHandler
     });
 
     const saveProfile = await this.profileRepository.save(createProfile);
+
+    this.eventBus.publish(new CreateHistoryEvent(saveProfile.id,SharedEvents.ProfileCreatedEvent))
     return {
       data: saveProfile,
       message: 'profile successfully created',

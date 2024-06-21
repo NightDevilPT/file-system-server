@@ -3,5 +3,8 @@ export enum SharedEvents {
 	UserVerifyEvent='UserVerifyEvent',
 	UserForgetPasswordRequestEvent='UserForgetPasswordRequestEvent',
 	UserPasswordUpdatedEvent='UserPasswordUpdatedEvent',
-	UserLoginEvent='UserLoginEvent'
+	UserLoginEvent='UserLoginEvent',
+
+	ProfileCreatedEvent='ProfileCreatedEvent',
+	ProfileUpdatedEvent='ProfileUpdatedEvent'
 }

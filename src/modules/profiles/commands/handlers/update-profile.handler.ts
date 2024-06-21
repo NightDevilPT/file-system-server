@@ -1,11 +1,14 @@
 // handlers/update-profile.handler.ts
 
-import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
+import { CommandHandler, EventBus, ICommandHandler } from '@nestjs/cqrs';
 import { Logger } from '@nestjs/common';
 import { Profile } from '../../entities/profile.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UpdateProfileCommand } from '../impl/update-profile.command';
+import { getChangedFields } from 'src/utils/diff-utils';
+import { CreateHistoryEvent } from 'src/modules/command-events/create-history.event';
+import { SharedEvents } from 'src/modules/command-events/events';
 
 @CommandHandler(UpdateProfileCommand)
 export class UpdateProfileHandler
@@ -16,6 +19,7 @@ export class UpdateProfileHandler
   constructor(
     @InjectRepository(Profile)
     private readonly profileRepository: Repository<Profile>,
+    private readonly eventBus: EventBus,
   ) {}
 
   async execute(command: UpdateProfileCommand): Promise<Profile> {
@@ -31,6 +35,8 @@ export class UpdateProfileHandler
         throw new Error(`Profile with ID ${profileId} not found`);
       }
 
+      const { from, to } = getChangedFields(profile, payload);
+
       if (payload.firstName) {
         profile.firstName = payload.firstName;
       }
@@ -41,7 +47,16 @@ export class UpdateProfileHandler
         profile.gender = payload.gender;
       }
 
-      return this.profileRepository.save(profile);
+      const updateProfile = await this.profileRepository.save(profile);
+      this.eventBus.publish(
+        new CreateHistoryEvent(
+          profile.id,
+          SharedEvents.ProfileUpdatedEvent,
+          from,
+          to,
+        ),
+      );
+      return updateProfile;
     } catch (error) {
       this.logger.error(
         `Failed to update profile with ID: ${profileId}`,

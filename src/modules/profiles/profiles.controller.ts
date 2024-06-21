@@ -26,10 +26,6 @@ export class ProfilesController {
 
   @Post()
   @ApiConsumes('application/x-www-form-urlencoded')
-  @ApiOperation({ summary: 'Create a Profile' })
-  @ApiResponse({ status: 201, description: 'The user has been successfully created.' })
-  @ApiResponse({ status: 400, description: 'Bad Request.' })
-  @ApiResponse({ status: 401, description: 'Unauthorized.' })
   create(@Body() createProfileDto: CreateProfileDto,@Req() req:UserRequest):Promise<Profile> {
     const userId = req.user.id;
     if (!userId) {
@@ -39,10 +35,6 @@ export class ProfilesController {
   }
 
   @Put(':id')
-  @ApiOperation({ summary: 'Update a Profile' })
-  @ApiResponse({ status: 201, description: 'The user has been successfully created.' })
-  @ApiResponse({ status: 400, description: 'Bad Request.' })
-  @ApiResponse({ status: 401, description: 'Unauthorized.' })
   async updateProfile(@Param('id') profileId: string, @Body() updateProfileDto: UpdateProfileDto): Promise<Profile> {
     if (!profileId) {
       throw new NotFoundException(`Profile with ID ${profileId} not found`);

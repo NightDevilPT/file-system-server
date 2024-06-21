@@ -22,10 +22,10 @@ export class History {
   eventName: string;
 
   @Column('json', { nullable: true })
-  payload: {
-    from: Record<string, any>;
-    to: Record<string, any>;
-  };
+  from: Record<string, any>;
+
+  @Column('json', { nullable: true })
+  to: Record<string, any>;
 
   @CreateDateColumn()
   createdAt: Date;
