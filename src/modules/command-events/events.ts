@@ -6,5 +6,15 @@ export enum SharedEvents {
 	UserLoginEvent='UserLoginEvent',
 
 	ProfileCreatedEvent='ProfileCreatedEvent',
-	ProfileUpdatedEvent='ProfileUpdatedEvent'
+	ProfileUpdatedEvent='ProfileUpdatedEvent',
+
+	FolderCreatedEvent="FolderCreatedEvent",
+	FolderNameChangedEvent="FolderNameChangedEvent",
+	FolderMovedEvent="FolderMovedEvent",
+	FolderPermissionChangedEvent="FolderPermissionChangedEvent",
+
+	FileCreatedEvent="FileCreatedEvent",
+	FileNameChangedEvent="FileNameChangedEvent",
+	FileMovedEvent="FileMovedEvent",
+	FilePermissionChangedEvent="FilePermissionChangedEvent"
 }
