@@ -12,6 +12,9 @@ export const typeOrmConfig = async (
   password: configService.get<string>('DB_PASSWORD'),
   database: configService.get<string>('DB_DATABASE'),
   entities: [__dirname + '/**/*.entity.{js,ts}'],
+  ssl: configService.get<boolean>('DB_SSL')
+          ? { rejectUnauthorized: false }
+          : false,
   synchronize: true,
   logging: true, // Enable TypeORM logging
   logger: 'advanced-console', // Use advanced console logger
