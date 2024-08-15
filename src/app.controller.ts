@@ -7,7 +7,9 @@ export class AppController {
   constructor() {}
 
   @Get()
-  getHello(): string {
-    return 'Hello World!';
+  getHello(): {message:string} {
+    return {
+      message:'Welcome to the File System.'
+    };
   }
 }
