@@ -1,21 +1,23 @@
 {
   "compilerOptions": {
-    "module": "commonjs",
-    "declaration": true,
-    "removeComments": true,
-    "emitDecoratorMetadata": true,
-    "experimentalDecorators": true,
-    "allowSyntheticDefaultImports": true,
-    "target": "ES2021",
-    "sourceMap": true,
-    "outDir": "./dist",
-    "baseUrl": "./",
-    "incremental": true,
-    "skipLibCheck": true,
-    "strictNullChecks": false,
-    "noImplicitAny": false,
-    "strictBindCallApply": false,
-    "forceConsistentCasingInFileNames": false,
-    "noFallthroughCasesInSwitch": false
-  }
+    "module": "commonjs",                      // CommonJS is required for Node.js compatibility.
+    "declaration": true,                       // Generates `.d.ts` declaration files.
+    "removeComments": true,                    // Removes comments in the compiled output.
+    "emitDecoratorMetadata": true,             // Enables decorator metadata, important for NestJS.
+    "experimentalDecorators": true,            // Enables support for decorators, which is essential in NestJS.
+    "allowSyntheticDefaultImports": true,      // Allows default imports from modules with no default export.
+    "target": "ES2021",                        // Target ES2021 for modern JavaScript features.
+    "sourceMap": true,                         // Generates source maps for debugging.
+    "outDir": "./dist",                        // Output directory for compiled files.
+    "baseUrl": "./",                           // Base directory to resolve non-relative module names.
+    "incremental": true,                       // Enable incremental compilation for faster builds.
+    "skipLibCheck": true,                      // Skip type checking of declaration files.
+    "strictNullChecks": false,                 // Disable strict null checks (consider enabling for better type safety).
+    "noImplicitAny": false,                    // Disable error reporting for `any` types (consider enabling for better type safety).
+    "strictBindCallApply": false,              // Disable strict checking of the `bind`, `call`, and `apply` methods (consider enabling for better type safety).
+    "forceConsistentCasingInFileNames": true,  // Ensure file name casing consistency across the project.
+    "noFallthroughCasesInSwitch": true         // Report errors for fallthrough cases in switch statements.
+  },
+  "include": ["src/**/*.ts"],                  // Include all TypeScript files in the `src` directory.
+  "exclude": ["node_modules", "dist"]          // Exclude `node_modules` and `dist` directories from compilation.
 }
