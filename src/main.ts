@@ -18,11 +18,6 @@ async function bootstrap() {
   app.use(bodyParser.json({ limit: '10mb' }));
   app.use(bodyParser.urlencoded({ limit: '10mb', extended: true }));
 
-  // Serve Swagger UI static files from the node_modules directory
-  app.useStaticAssets(join(__dirname, '..', 'node_modules', 'swagger-ui-dist'), {
-    prefix: '/swagger-ui-dist/'
-  });
-
   const config = new DocumentBuilder()
     .setTitle('File System Management')
     .setDescription('The File System API description')
