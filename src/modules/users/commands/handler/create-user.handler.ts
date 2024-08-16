@@ -32,7 +32,7 @@ export class CreateUserHandler implements ICommandHandler<CreateUserCommand> {
         where: { email: payload.email },
       });
       if (existingUser) {
-        return new ConflictException('This email is already in use');
+        throw new ConflictException('This email is already in use');
       }
 
       const hashedPassword = await this.hashPasswordService.hashPassword(

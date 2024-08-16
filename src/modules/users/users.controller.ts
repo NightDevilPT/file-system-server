@@ -17,7 +17,7 @@ export class UserController {
   @Post()
   @ApiConsumes('application/x-www-form-urlencoded')
   @ApiOperation({ summary: 'Create a new user' })
-  @ApiResponse({ status: 201, description: 'The user has been successfully created.' })
+  @ApiResponse({ status: 200, description: 'The user has been successfully created.' })
   @ApiResponse({ status: 400, description: 'Bad Request.' })
   async createUser(@Body() createUserDto: CreateUserDto):Promise<userResponseInterface> {
     return this.usersService.createUser(createUserDto);
