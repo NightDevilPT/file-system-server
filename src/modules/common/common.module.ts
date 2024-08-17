@@ -7,8 +7,8 @@ import { Folder } from '../folders/entities/folder.entity';
 import { File } from '../files/entities/file.entity';
 import { Profile } from '../profiles/entities/profile.entity';
 import { User } from '../users/entities/user.entity';
-import { BffController } from './bff.controller';
-import { BffService } from './bff.service';
+import { BffController } from './common.controller';
+import { CommonService } from './common.service';
 import { QueryService } from 'src/services/query-service/query.service';
 import { BffQueries } from './queries';
 
@@ -18,6 +18,6 @@ import { BffQueries } from './queries';
     TypeOrmModule.forFeature([Folder, File, Profile, User]),
   ],
   controllers: [BffController],
-  providers: [JwtService, JwtAuthService, BffService, QueryService,...BffQueries],
+  providers: [JwtService, JwtAuthService, CommonService, QueryService,...BffQueries],
 })
-export class BffModule {}
+export class CommonModule {}

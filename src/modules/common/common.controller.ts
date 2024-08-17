@@ -8,17 +8,17 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiQuery, ApiTags } from '@nestjs/swagger';
-import { BffService } from './bff.service';
+import { CommonService } from './common.service';
 import { FilterDto, QueryDto } from './dtos/query.dto';
 import { AuthGuard } from 'src/guards/auth.guard';
 import { UserRequest } from '../profiles/interfaces/profile.interfaces';
 
-@ApiTags('Bff Controller')
-@Controller('bff')
+@ApiTags('Common Controller')
+@Controller('common')
 @UseGuards(AuthGuard)
 @ApiBearerAuth()
 export class BffController {
-  constructor(private readonly bffService: BffService) {}
+  constructor(private readonly bffService: CommonService) {}
 
   @Get('resource/:resourceId')
   @ApiQuery({

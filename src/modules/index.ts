@@ -1,4 +1,5 @@
-import { BffModule } from "./bff/bff.module";
+
+import { CommonModule } from "./common/common.module";
 import { FilesModule } from "./files/files.module";
 import { FoldersModule } from "./folders/folders.module";
 import { HistoryModule } from "./history/history.module";
@@ -10,6 +11,6 @@ export const AllModules = [
 	ProfilesModule,
 	FoldersModule,
 	FilesModule,
-	BffModule,
+	CommonModule,
 	HistoryModule
 ]

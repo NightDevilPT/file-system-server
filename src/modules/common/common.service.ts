@@ -6,7 +6,7 @@ import { GetResourceByTokenQuery } from './queries/impl/get-resource-by-token.qu
 import { GetResourcesTypeCountQuery } from './queries/impl/get-resources-by-type-count.query';
 
 @Injectable()
-export class BffService {
+export class CommonService {
   constructor(private readonly queryBus: QueryBus) {}
 
   getResourceByIdData(query: QueryDto, userId: string) {
