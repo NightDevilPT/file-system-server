@@ -11,11 +11,12 @@ import { BffController } from './common.controller';
 import { CommonService } from './common.service';
 import { QueryService } from 'src/services/query-service/query.service';
 import { BffQueries } from './queries';
+import { History } from '../history/entities/history.entity';
 
 @Module({
   imports: [
     CqrsModule,
-    TypeOrmModule.forFeature([Folder, File, Profile, User]),
+    TypeOrmModule.forFeature([Folder, File, Profile, User,History]),
   ],
   controllers: [BffController],
   providers: [JwtService, JwtAuthService, CommonService, QueryService,...BffQueries],

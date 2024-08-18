@@ -2,7 +2,7 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { initializeApp, getApps, FirebaseApp } from 'firebase/app';
-import { getStorage, ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
+import { getStorage, ref, uploadBytesResumable, getDownloadURL, deleteObject } from 'firebase/storage';
 import * as path from 'path';
 
 @Injectable()
@@ -25,13 +25,32 @@ export class FirebaseService {
 
   async uploadFile(file: Express.Multer.File): Promise<string> {
     const storage = getStorage(this.firebaseApp);
-	const currentDate = new Date().toISOString().replace(/[:.]/g, '-');
+    const currentDate = new Date().toISOString().replace(/[:.]/g, '-');
     const ext = path.extname(file.originalname);
     const baseName = path.basename(file.originalname, ext);
     const newFileName = `${baseName}-${currentDate}${ext}`;
-    const storageRef = ref(storage, `users-files/${newFileName}`);
+    const storageRef = ref(storage, `file-storage-files/${newFileName}`);
     await uploadBytesResumable(storageRef, file.buffer);
     const fileUrl = await getDownloadURL(storageRef);
     return fileUrl;
+  }
+
+  async uploadAvtar(file: Express.Multer.File): Promise<string> {
+    const storage = getStorage(this.firebaseApp);
+    const currentDate = new Date().toISOString().replace(/[:.]/g, '-');
+    const ext = path.extname(file.originalname);
+    const baseName = path.basename(file.originalname, ext);
+    const newFileName = `${baseName}-${currentDate}${ext}`;
+    const storageRef = ref(storage, `file-storage-avtar/${newFileName}`);
+    await uploadBytesResumable(storageRef, file.buffer);
+    const fileUrl = await getDownloadURL(storageRef);
+    return fileUrl;
+  }
+
+  // New method to delete a file from Firebase Storage
+  async deleteFile(filePath: string): Promise<void> {
+    const storage = getStorage(this.firebaseApp);
+    const storageRef = ref(storage, filePath);
+    await deleteObject(storageRef);
   }
 }

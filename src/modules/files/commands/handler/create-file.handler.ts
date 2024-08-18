@@ -66,7 +66,6 @@ export class CreateFileHandler implements ICommandHandler<CreateFileCommand> {
           { name: fileModel.name, id: fileModel.id },
         ];
       } else {
-        console.log('parenELSEtFolderId');
         this.logger.log(`Looking for profile for user ID: ${userId}`);
         const profile = await this.profileRepository.findOne({
           where: { user: { id: userId } },
