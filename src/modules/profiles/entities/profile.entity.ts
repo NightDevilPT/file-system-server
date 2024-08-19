@@ -25,8 +25,11 @@ export class Profile {
   @Column({ nullable: false, enum: GenderEnum })
   gender: string;
 
-  @Column({ nullable: true })  // Making this column nullable in case avatar is optional
+  @Column({ nullable: true }) // Making this column nullable in case avatar is optional
   avatar: string;
+
+  @Column('text', { array: true, nullable: true }) // Making this column nullable and an array of strings
+  allAvatar: string[];
 
   @Column({ nullable: false })
   storageSize: number | null;

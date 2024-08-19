@@ -1,11 +1,31 @@
-import { Controller, Get, Post, Body, Param, UseGuards, Req, UnauthorizedException, NotFoundException, Put } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiConsumes, ApiBearerAuth } from '@nestjs/swagger';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  UseGuards,
+  Req,
+  UnauthorizedException,
+  NotFoundException,
+  Put,
+  UseInterceptors,
+  UploadedFile,
+} from '@nestjs/common';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiConsumes,
+  ApiBearerAuth,
+} from '@nestjs/swagger';
 import { ProfilesService } from './profiles.service';
 import { CreateProfileDto } from './dto/create-profile.dto';
 import { AuthGuard } from 'src/guards/auth.guard';
 import { ProfileResponse, UserRequest } from './interfaces/profile.interfaces';
 import { Profile } from './entities/profile.entity';
 import { UpdateProfileDto } from './dto/update-profile.dto';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @ApiTags('Profile Controller')
 @ApiBearerAuth()
@@ -16,7 +36,7 @@ export class ProfilesController {
 
   @Get()
   @ApiOperation({ summary: 'Get a Profile' })
-  async getProfile(@Req() req:UserRequest): Promise<ProfileResponse> {
+  async getProfile(@Req() req: UserRequest): Promise<ProfileResponse> {
     const userId = req.user.id;
     if (!userId) {
       throw new UnauthorizedException(`Invalid Token`);
@@ -25,21 +45,35 @@ export class ProfilesController {
   }
 
   @Post()
-  @ApiConsumes('application/x-www-form-urlencoded')
-  create(@Body() createProfileDto: CreateProfileDto,@Req() req:UserRequest):Promise<Profile> {
+  @ApiConsumes('multipart/form-data')
+  @UseInterceptors(FileInterceptor('file'))
+  create(
+    @UploadedFile() file: Express.Multer.File,
+    @Body() createProfileDto: CreateProfileDto,
+    @Req() req: UserRequest,
+  ): Promise<Profile> {
     const userId = req.user.id;
     if (!userId) {
       throw new UnauthorizedException('User ID not found in the request');
     }
-    return this.profilesService.create(createProfileDto,userId);
+    return this.profilesService.create(createProfileDto, userId, file);
   }
 
   @Put(':id')
-  async updateProfile(@Param('id') profileId: string, @Body() updateProfileDto: UpdateProfileDto): Promise<Profile> {
+  @ApiConsumes('multipart/form-data')
+  @UseInterceptors(FileInterceptor('file'))
+  async updateProfile(
+    @Param('id') profileId: string,
+    @UploadedFile() file: Express.Multer.File,
+    @Body() updateProfileDto: UpdateProfileDto,
+  ): Promise<Profile> {
     if (!profileId) {
       throw new NotFoundException(`Profile with ID ${profileId} not found`);
     }
-    return this.profilesService.updateProfile(profileId,updateProfileDto)
+    return this.profilesService.updateProfile(
+      profileId,
+      updateProfileDto,
+      file,
+    );
   }
 }
-

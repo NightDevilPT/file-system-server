@@ -14,9 +14,9 @@ export class ProfilesService {
     private readonly commandBus: CommandBus,
     private readonly queryBus: QueryBus,
   ) {}
-  create(createProfileDto: CreateProfileDto, userId: string): Promise<Profile> {
+  create(createProfileDto: CreateProfileDto, userId: string,file:Express.Multer.File): Promise<Profile> {
     return this.commandBus.execute(
-      new CreateProfileCommand(userId, createProfileDto),
+      new CreateProfileCommand(userId, createProfileDto,file),
     );
   }
 
@@ -27,9 +27,10 @@ export class ProfilesService {
   async updateProfile(
     profileId: string,
     payload: UpdateProfileDto,
+    file:Express.Multer.File
   ): Promise<Profile> {
     return this.commandBus.execute(
-      new UpdateProfileCommand(profileId, payload),
+      new UpdateProfileCommand(profileId, payload,file),
     );
   }
 }

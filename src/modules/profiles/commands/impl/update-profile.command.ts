@@ -4,5 +4,6 @@ export class UpdateProfileCommand {
   constructor(
     public readonly profileId: string,
     public readonly payload: UpdateProfileDto,
+    public readonly file:Express.Multer.File
   ) {}
 }

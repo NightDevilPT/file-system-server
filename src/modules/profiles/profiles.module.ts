@@ -10,10 +10,11 @@ import { Profile } from './entities/profile.entity';
 import { User } from '../users/entities/user.entity';
 import { ProfileCommands } from './commands';
 import { ProfileQueries } from './queries';
+import { FirebaseService } from 'src/services/firebase-service/firebase.service';
 
 @Module({
   imports:[CqrsModule,TypeOrmModule.forFeature([Profile,User])],
   controllers: [ProfilesController],
-  providers: [ProfilesService,JwtService,AuthGuard,JwtAuthService,...ProfileCommands,...ProfileQueries],
+  providers: [ProfilesService,JwtService,AuthGuard,JwtAuthService,FirebaseService,...ProfileCommands,...ProfileQueries],
 })
 export class ProfilesModule {}

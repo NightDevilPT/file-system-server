@@ -1,6 +1,7 @@
 import { IsString, IsEnum } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { GenderEnum } from '../interfaces/profile.interfaces';
+import { Type } from 'class-transformer';
 
 export class CreateProfileDto {
   @ApiProperty({
@@ -27,4 +28,8 @@ export class CreateProfileDto {
   })
   @IsEnum(GenderEnum)
   gender: string;
+
+  @ApiProperty({ type: 'string', format: 'binary' })
+  @Type(() => Object)
+  file: Express.Multer.File;
 }
