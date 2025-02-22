@@ -25,7 +25,6 @@ export class CreateHistoryHandler
 
   async execute(command: CreateHistoryCommand): Promise<void> {
     const { resourceId, eventName, from, to } = command;
-    console.log(eventName, '@@@@');
     const historyPayload = new History();
     historyPayload.eventName = eventName;
     historyPayload.resourceId = resourceId;

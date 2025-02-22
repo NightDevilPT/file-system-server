@@ -1,4 +1,11 @@
 import {
+  ApiQuery,
+  ApiTags,
+  ApiOperation,
+  ApiParam,
+  ApiCookieAuth,
+} from '@nestjs/swagger';
+import {
   Controller,
   Query,
   Get,
@@ -7,16 +14,15 @@ import {
   Req,
   UnauthorizedException,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiQuery, ApiTags, ApiOperation, ApiParam } from '@nestjs/swagger';
-import { CommonService } from './common.service';
 import { QueryDto } from './dtos/query.dto';
-import { AuthGuard } from 'src/guards/auth.guard';
+import { CommonService } from './common.service';
+import { SessionGuard } from 'src/guards/session.guard';
 import { UserRequest } from '../profiles/interfaces/profile.interfaces';
 
 @ApiTags('Common Controller')
 @Controller('common')
-@UseGuards(AuthGuard)
-@ApiBearerAuth()
+@UseGuards(SessionGuard)
+@ApiCookieAuth('accessToken')
 export class BffController {
   constructor(private readonly bffService: CommonService) {}
 
@@ -53,7 +59,8 @@ export class BffController {
     name: 'limit',
     type: 'number',
     required: false,
-    description: 'Optional limit for the number of results per page. Defaults to 10.',
+    description:
+      'Optional limit for the number of results per page. Defaults to 10.',
   })
   async getResourceByIdData(
     @Param('resourceId') resourceId: string,
@@ -89,7 +96,10 @@ export class BffController {
     type: 'string',
     description: 'The token used to identify and access the shared resource.',
   })
-  async getResourceByToken(@Param('token') token: string, @Req() req: UserRequest) {
+  async getResourceByToken(
+    @Param('token') token: string,
+    @Req() req: UserRequest,
+  ) {
     const userId = req.user?.id;
     if (!userId) {
       throw new UnauthorizedException('User ID not found in the request');

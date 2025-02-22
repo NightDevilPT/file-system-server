@@ -1,12 +1,11 @@
-import { UUID } from "crypto";
+import { UUID } from 'crypto';
 
 export interface userResponseInterface {
-	message:string;
+  message: string;
 }
 
 export interface loginUserResponse extends userResponseInterface {
-	data?:{
-		jwt:string;
-		id:string;
-	}
+  data?: {
+    id: string;
+  };
 }

@@ -63,7 +63,6 @@ export class Folder {
   @OneToMany(() => File, (file) => file.parentFolder, { cascade: true })
   files: File[];
 
-
   @BeforeUpdate()
   updateTimestamp() {
     this.updatedAt = new Date();

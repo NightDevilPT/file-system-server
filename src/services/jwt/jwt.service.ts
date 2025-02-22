@@ -1,6 +1,6 @@
+import { JwtService } from '@nestjs/jwt';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class JwtAuthService {
@@ -9,16 +9,41 @@ export class JwtAuthService {
     private readonly configService: ConfigService,
   ) {}
 
-  // Generate JWT token
-  generateToken(payload: any): string {
+  // Generate Access & Refresh Tokens
+  generateTokens(payload: any) {
     const secret = this.configService.get<string>('JWT_SECRET');
-    const expiresIn = this.configService.get<string>('JWT_EXPIREIN');
-    return this.jwtService.sign(payload, { secret, expiresIn });
+    const accessTokenExpire = '10m'; // Access Token Expires in 10 min
+    const refreshTokenExpire = '15m'; // Refresh Token Expires in 15 min
+
+    const accessToken = this.jwtService.sign(payload, {
+      secret,
+      expiresIn: accessTokenExpire,
+    });
+    const refreshToken = this.jwtService.sign(payload, {
+      secret,
+      expiresIn: refreshTokenExpire,
+    });
+
+    return { accessToken, refreshToken };
   }
 
-  // Verify JWT token
+  // Verify Token (Used for Access Token)
   verifyToken(token: string): any {
-    const secret = this.configService.get<string>('JWT_SECRET');
-    return this.jwtService.verify(token, { secret });
+    try {
+      const secret = this.configService.get<string>('JWT_SECRET');
+      return this.jwtService.verify(token, { secret });
+    } catch (error) {
+      return null; // Token is invalid or expired
+    }
+  }
+
+  // Verify Refresh Token
+  verifyRefreshToken(token: string): any {
+    try {
+      const secret = this.configService.get<string>('JWT_SECRET');
+      return this.jwtService.verify(token, { secret });
+    } catch (error) {
+      return null;
+    }
   }
 }

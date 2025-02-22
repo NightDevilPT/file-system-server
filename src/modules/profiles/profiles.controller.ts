@@ -15,22 +15,23 @@ import {
 import {
   ApiTags,
   ApiOperation,
-  ApiResponse,
   ApiConsumes,
   ApiBearerAuth,
+  ApiCookieAuth,
 } from '@nestjs/swagger';
-import { ProfilesService } from './profiles.service';
-import { CreateProfileDto } from './dto/create-profile.dto';
-import { AuthGuard } from 'src/guards/auth.guard';
-import { ProfileResponse, UserRequest } from './interfaces/profile.interfaces';
 import { Profile } from './entities/profile.entity';
-import { UpdateProfileDto } from './dto/update-profile.dto';
+import { ProfilesService } from './profiles.service';
+import { SessionGuard } from 'src/guards/session.guard';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { CreateProfileDto } from './dto/create-profile.dto';
+import { UpdateProfileDto } from './dto/update-profile.dto';
+import { ProfileResponse, UserRequest } from './interfaces/profile.interfaces';
 
 @ApiTags('Profile Controller')
 @ApiBearerAuth()
+@ApiCookieAuth('accessToken')
 @Controller('profiles')
-@UseGuards(AuthGuard)
+@UseGuards(SessionGuard)
 export class ProfilesController {
   constructor(private readonly profilesService: ProfilesService) {}
 
