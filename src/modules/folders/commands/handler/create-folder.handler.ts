@@ -58,7 +58,7 @@ export class CreateFolderHandler
           throw new NotFoundException(`Profile not found`);
         }
         folder.parentProfile = findProfile;
-        folder.resourceId = findProfile.id;
+        folder.resourceId = userId;
         folder.breadcrumb = [{ name: folder.name, id: folder.id }];
       }
 

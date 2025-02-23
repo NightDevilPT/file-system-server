@@ -77,7 +77,7 @@ export class CreateFileHandler implements ICommandHandler<CreateFileCommand> {
           );
         }
         fileModel.parentProfile = profile;
-        fileModel.resourceId = profile.id;
+        fileModel.resourceId = userId;
       }
 
       const fileUrl = await this.firebaseService.uploadFile(file);
