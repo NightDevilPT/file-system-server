@@ -12,4 +12,5 @@ export interface ApiResponse<T> {
   data: T;
   message: string;
   meta?: MetaData;
+  error?: any; // Add this field for error responses
 }

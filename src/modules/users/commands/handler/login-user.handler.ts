@@ -26,7 +26,7 @@ export class LoginUserHandler implements ICommandHandler<LoginUserCommand> {
     private readonly eventBus: EventBus,
   ) {}
 
-  async execute({ payload, res }: LoginUserCommand): Promise<void> {
+  async execute({ payload, res }: LoginUserCommand): Promise<any> {
     try {
       const { email, password } = payload;
       this.logger.log(`Received loginUser command for email: ${email}`);
@@ -59,21 +59,6 @@ export class LoginUserHandler implements ICommandHandler<LoginUserCommand> {
         id: user.id,
       });
 
-      // ✅ Set Secure Cookies
-      res.cookie('accessToken', accessToken, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'strict',
-        maxAge: 10 * 60 * 1000, // 10 minutes
-      });
-
-      res.cookie('refreshToken', refreshToken, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'strict',
-        maxAge: 15 * 60 * 1000, // 15 minutes
-      });
-
       // ✅ Publish Event (Non-blocking)
       setImmediate(() => {
         this.eventBus.publish(
@@ -82,10 +67,10 @@ export class LoginUserHandler implements ICommandHandler<LoginUserCommand> {
       });
 
       // ✅ Send JSON Response
-      res.status(200).json({
+      return {
         message: 'Login successful',
-        data: { id: user.id },
-      });
+        data: { id: user.id, accessToken, refreshToken },
+      };
     } catch (error) {
       this.logger.error(`Error in loginUser command: ${error.message}`);
 
