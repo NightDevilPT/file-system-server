@@ -19,6 +19,9 @@ export class ResponseInterceptor<T>
   ): Observable<ApiResponse<T>> {
     const httpContext = context.switchToHttp();
     const response: Response = httpContext.getResponse();
+    const SECONDS = 60 * 1000;
+    const ACCESS_TIME = 10;
+    const REFRESH_TIME = 12;
 
     return next.handle().pipe(
       map((data: any) => {
@@ -37,7 +40,7 @@ export class ResponseInterceptor<T>
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
             sameSite: 'strict',
-            maxAge: 10 * 60 * 1000, // 10 minutes
+            maxAge: ACCESS_TIME * SECONDS, // 10 minutes
           });
         }
 
@@ -46,14 +49,18 @@ export class ResponseInterceptor<T>
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
             sameSite: 'strict',
-            maxAge: 15 * 60 * 1000, // 15 minutes
+            maxAge: REFRESH_TIME * SECONDS, // 12 minutes
           });
         }
 
-        // ✅ Remove tokens from the response body
+        // ✅ Remove tokens from the response body safely
         if (data?.data) {
-          delete data.data.accessToken;
-          delete data.data.refreshToken;
+          const {
+            accessToken: _,
+            refreshToken: __,
+            ...cleanedData
+          } = data.data;
+          data.data = cleanedData;
         }
 
         // ✅ Extract actual data and message
@@ -62,7 +69,7 @@ export class ResponseInterceptor<T>
 
         // ✅ Extract metadata if available
         const metadata: MetaData | undefined = data?.meta || data?.metadata;
-        if (data?.metadata) {
+        if (metadata) {
           delete extractedData.metadata;
         }
 
@@ -72,26 +79,28 @@ export class ResponseInterceptor<T>
           statusCode: statusCode,
           data: extractedData as T,
           message: message,
+          ...(metadata && {
+            meta: {
+              totalCount: metadata.totalCount ?? 0,
+              totalPages: metadata.totalPages ?? 0,
+              nextPage: metadata.nextPage ?? null,
+              previousPage: metadata.previousPage ?? null,
+              ...metadata,
+            } as MetaData,
+          }),
         };
-
-        // ✅ Include metadata if available
-        if (metadata) {
-          formattedResponse.meta = {
-            totalCount: metadata.totalCount ?? 0,
-            totalPages: metadata.totalPages ?? 0,
-            nextPage: metadata.nextPage ?? null,
-            previousPage: metadata.previousPage ?? null,
-            ...metadata,
-          } as MetaData;
-        }
 
         console.log(formattedResponse, 'Formatted Response'); // Debugging log
 
-        // ✅ Use `res.json()` to send the response dynamically
-        response.status(statusCode).json(formattedResponse);
+        if (accessToken && refreshToken) {
+          // ✅ Use `res.json()` to send the response dynamically
+          response.status(statusCode).json(formattedResponse);
 
-        // ✅ Return an empty observable because `res.json()` already sends the response
-        return null as unknown as ApiResponse<T>;
+          // ✅ Return an empty observable because `res.json()` already sends the response
+          return null as unknown as ApiResponse<T>;
+        } else {
+          return formattedResponse;
+        }
       }),
     );
   }
